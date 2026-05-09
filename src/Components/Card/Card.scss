@@ -1,0 +1,15 @@
+.card-wrapper {
+  height: 30rem;
+  width: 15rem;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #ffffff;
+  box-shadow: 0 0 10px 5px rgba(221, 221, 221, 1);
+  transition: all 0.8s;
+  font-size: 0.8rem;
+  &:hover {
+    transform: scale(1.02);
+  }
+}
