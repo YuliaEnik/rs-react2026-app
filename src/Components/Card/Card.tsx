@@ -20,11 +20,11 @@ class Card extends React.Component<IData, CardState> {
             onError={() => this.setState({ imgError: true })}
           />
         ) : (
-          <div className="image-placeholder">🖼️ Image not available</div>
+          <div className="image-placeholder">Image not available</div>
         )}
-        <h3>Author: <i>{this.props.creators?.[0]?.description || 'Unknown'}</i></h3>
-        <h3>Name: <i>{this.props.title}</i></h3>
-        <h3>Year: <i>{this.props.creation_date || 'Unknown'}</i></h3>
+        <h3>Author: <i className="card-value">{this.props.creators?.[0]?.description || 'Unknown'}</i></h3>
+        <h3>Name: <i className="card-value">{this.props.title}</i></h3>
+        <h3>Year: <i className="card-value">{this.props.creation_date || 'Unknown'}</i></h3>
       </li>
     );
   }
