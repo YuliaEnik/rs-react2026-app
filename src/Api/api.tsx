@@ -6,9 +6,9 @@ const getURL = async (search?: string, page: number = 1): Promise<{ data: IData[
   const limit = 12;
   const skip = (page - 1) * limit;
 
-  const isProduction = import.meta.env.PROD;
-  const baseUrl = isProduction 
-    ? 'https://openaccess-api.clevelandart.org'
+  const isGithubPages = window.location.hostname.includes('github.io');
+  const baseUrl = isGithubPages 
+    ? 'https://clevelandart.org'
     : '/api/cleveland';
 
   let url: string;
