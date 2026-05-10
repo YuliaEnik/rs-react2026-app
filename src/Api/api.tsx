@@ -6,10 +6,7 @@ const getURL = async (search?: string, page: number = 1): Promise<{ data: IData[
   const limit = 12;
   const skip = (page - 1) * limit;
 
-  const isGithubPages = window.location.hostname.includes('github.io');
-  const baseUrl = isGithubPages 
-    ? 'https://openaccess-api.clevelandart.org' 
-    : '/api/cleveland';
+  const baseUrl = '/api/cleveland';
 
   let url: string;
   if (query) {
