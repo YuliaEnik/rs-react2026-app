@@ -5,8 +5,19 @@ const getURL = async (search?: string, page: number = 1): Promise<{ data: IData[
   const query = search?.trim()|| '';
   const limit = 12;
   const skip = (page - 1) * limit;
-  
   let url: string;
+
+  const isProduction = import.meta.env.PROD;
+  const baseUrl = isProduction 
+    ? 'https://openaccess-api.clevelandart.org'
+    : '/api/cleveland';
+
+  if (query) {
+    url = `${baseUrl}/api/artworks?q=${encodeURIComponent(query)}&has_image=1&limit=50`;
+  } else {
+    url = `${baseUrl}/api/artworks?has_image=1&limit=${limit}&skip=${skip}`;
+  }
+  
   if (query) {
     url = `/api/cleveland/api/artworks?q=${encodeURIComponent(query)}&has_image=1&limit=50`;
   } else {
