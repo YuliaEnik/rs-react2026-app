@@ -1,0 +1,43 @@
+.skeleton-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  position: relative;
+
+  .skeleton-image, 
+  .skeleton-line {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 25%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: var(--border-radius);
+  }
+
+  .skeleton-image {
+    width: 100%;
+    height: 180px;
+    margin-bottom: 1rem;
+  }
+
+  .skeleton-line {
+    height: 1rem;
+    margin-bottom: 0.8rem;
+    
+    &.author { width: 85%; }
+    &.title { width: 65%; }
+    &.year { width: 35%; }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

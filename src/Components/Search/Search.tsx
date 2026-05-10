@@ -13,25 +13,24 @@ class Search extends React.Component<SearchProps, IState> {
   }
 
   handleSearch = () => {
-  const trimmedValue = this.state.value.trim();
+    const trimmedValue = this.state.value.trim();
 
-  this.props.onSearch(trimmedValue);
-
-  if (trimmedValue) {
-    localStorage.setItem('items', trimmedValue);
-  } else {
-    localStorage.removeItem('items');
-  }
-};
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ value: event.target.value });
-  };
-
-  handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      this.handleSearch();
+    if (this.props.onSearch) {
+      this.props.onSearch(trimmedValue);
     }
-  };
+  try {
+    if (trimmedValue) {
+      localStorage.setItem('items', trimmedValue);
+      } else {
+        localStorage.removeItem('items');
+      }
+      } catch (e) {
+      console.error("Could not save to localStorage", e);
+    }
+    };
+  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      this.setState({ value: event.target.value });
+    };
 
   handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -40,12 +39,16 @@ class Search extends React.Component<SearchProps, IState> {
  };
 
   componentDidMount(): void {
+    try {
     const savedValue = localStorage.getItem('items');
     if (savedValue) {
       this.setState({ value: savedValue });
-      this.props.onSearch(savedValue);
+      this.props.onSearch?.(savedValue);
     } else {
-      this.props.onSearch('');
+      this.props.onSearch?.('');
+    }
+    } catch {
+      this.props.onSearch?.('');
     }
   }
 

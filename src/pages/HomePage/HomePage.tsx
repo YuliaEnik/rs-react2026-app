@@ -4,6 +4,9 @@ import type { IDataApi, IData } from '../../Data/data';
 import { getURL } from '../../Api/api';
 import './HomePage.scss';
 import { Search } from '../../Components/Search/Search';
+import { ErrorButton } from '../../Components/ErrorButton/ErrorButton';
+import { SkeletonCard } from '../../Components/Skeleton/Skeleton';
+import { ErrorBoundary } from '../../Components/ErrorBoundary/ErrorBoundary';
 
 class HomePage extends React.Component<unknown, IDataApi> {
   constructor(props: unknown) {
@@ -14,6 +17,7 @@ class HomePage extends React.Component<unknown, IDataApi> {
       currentPage: 1,
       hasMore: true,
       searchQuery: '',
+      errorMessage: null,
     };
   }
 
@@ -30,10 +34,11 @@ class HomePage extends React.Component<unknown, IDataApi> {
         isLoading: true,
         repos: null,
         currentPage: 1,
-         searchQuery: searchQuery,
+        searchQuery: searchQuery,
+        errorMessage: null,
       });
     } else {
-      this.setState({ isLoading: true });
+      this.setState({ isLoading: true, errorMessage: null });
     }
 
     try {
@@ -48,8 +53,12 @@ class HomePage extends React.Component<unknown, IDataApi> {
         hasMore: response.hasMore,
       }));
     } catch (error) {
-      console.error(error);
-      this.setState({ isLoading: false });
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      console.error('API Error:', error);
+      this.setState({ 
+        isLoading: false, 
+        errorMessage: errorMessage,
+      });
     }
   };
 
@@ -67,46 +76,54 @@ class HomePage extends React.Component<unknown, IDataApi> {
   };
 
   render() {
-  const { repos, isLoading, searchQuery, hasMore } = this.state;
+  const { repos, isLoading, searchQuery, errorMessage, hasMore } = this.state;
   const hasNoResults = repos && repos.length === 0 && !isLoading && searchQuery !== '';
+  const showError = errorMessage && !isLoading;
+  const skeletonItems = Array.from({ length: 12 }, (_, i) => <SkeletonCard key={i} />);
   
   return (
+    <ErrorBoundary>
     <main className="main">
       <div className="home-page">
         <Search onSearch={this.handleSearch}/>
 
         <ul className="cards-wrapper">
+          {isLoading && !repos && skeletonItems } 
 
-          {isLoading && !repos && (
-            <p className="loading">Loading...</p>
-          )}
-
-          {hasNoResults && (
+          {!isLoading && hasNoResults && (
             <div className="loading">
               <p>Sorry, nothing found for &quot;{searchQuery}&quot;</p>
-              <p>Try searching by artist name or painting title</p>
+            </div>
+          )}
+
+          {!isLoading && showError && (
+            <div className="error-message">
+              <p>{errorMessage}</p>
+              <button onClick={() => this.getApi(this.state.searchQuery, false)}>
+                Try Again
+              </button>
             </div>
           )}
 
           {repos && repos.map((cardData: IData) => (
             <Card {...cardData} key={cardData.id} />
           ))}
+
+           {isLoading && repos && skeletonItems.slice(0, 4)}
+
         </ul>
-      
         <div className="pagination">
-
-          {isLoading && repos && (
-            <p className="loading">Loading...</p>
-          )}
-
-          {!isLoading && hasMore && repos && (
+          {!isLoading && hasMore && repos && repos.length > 0 && (
             <button onClick={this.loadMore}>
               Load More
             </button>
           )}
         </div>
+
+        <ErrorButton />
       </div>
     </main>
+    </ErrorBoundary>
   );
 }
 

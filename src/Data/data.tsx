@@ -12,6 +12,7 @@ export interface IDataApi {
   currentPage: number;
   hasMore: boolean;
   searchQuery: string;
+  errorMessage: string | null;
 }
 
 export interface CardState {
