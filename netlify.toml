@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/api/cleveland/*"
-  to = "https://clevelandart.org"
+  to = "https://openaccess-api.clevelandart.org/:splat"
   status = 200
   force = true
 
@@ -8,4 +8,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-  

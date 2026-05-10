@@ -9,9 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format:fix": "prettier --write .",
-    "prepare": "husky",
-    "deploy": "gh-pages -d dist",
-    "predeploy": "npm run build"
+    "prepare": "husky"
   },
   "dependencies": {
     "react": "^19.2.5",
