@@ -1,0 +1,23 @@
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: var(--card-width);
+  height: var(--card-height);
+  padding: var(--spacing-sm);
+  gap: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-normal);
+  
+  &:hover {
+    box-shadow: var(--box-shadow-hover);
+    transform: scale(1.02);
+  }
+}
+
+ .card-value {
+    font-style: italic;
+    margin-left: 0.3rem;
+    color: var(--color-primary);
+  }
+  
