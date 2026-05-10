@@ -8,7 +8,7 @@ const getURL = async (search?: string, page: number = 1): Promise<{ data: IData[
 
   const isGithubPages = window.location.hostname.includes('github.io');
   const baseUrl = isGithubPages 
-    ? 'https://clevelandart.org'
+    ? 'https://openaccess-api.clevelandart.org' 
     : '/api/cleveland';
 
   let url: string;
