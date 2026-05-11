@@ -8,7 +8,7 @@ describe('HomePage Component', () => {
     localStorage.clear();
   });
 
-  it('отображает скелетоны при загрузке и карточки после получения данных', async () => {
+  it('show skeletons and caeds after rende', async () => {
     render(<HomePage />);
 
     const skeletons = document.querySelectorAll('.skeleton-card'); 
@@ -19,7 +19,6 @@ describe('HomePage Component', () => {
       expect(screen.getByText('Test Artwork 2')).toBeInTheDocument();
     }, { timeout: 3000 });
 
-    /* expect(screen.getByRole('button', { name: /Load more/i })).toBeInTheDocument(); */
   });
 
   it('notice "Sorry, nothing found", if cardList clear', async () => {
