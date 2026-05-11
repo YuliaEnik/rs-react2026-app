@@ -1,6 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { HomePage } from './HomePage';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../__tests__/mocks/server';
 
 
 describe('HomePage Component', () => {
@@ -33,4 +35,17 @@ describe('HomePage Component', () => {
       expect(cards.length).toBe(0);
     });
   });
+
+  it('show message if API broke', async () => {
+  server.use(
+    http.get('*/api/artworks', () => {
+      return new HttpResponse(null, { status: 500 });
+    })
+  );
+  
+  render(<HomePage />);
+  await waitFor(() => {
+    expect(screen.getByText(/error/i)).toBeInTheDocument();
+  });
+});
 });
