@@ -1,14 +1,14 @@
-import React from 'react';
-import { Card } from '../../Components/Card/Card';
-import type { IDataApi, IData } from '../../Data/data';
-import { getURL } from '../../Api/api';
+import React from "react";
+import { getURL } from "../../Api/api";
+import { Card } from "../../Components/Card/Card";
+import { ErrorBoundary } from "../../Components/ErrorBoundary/ErrorBoundary";
+import { ErrorButton } from "../../Components/ErrorButton/ErrorButton";
+import { Search } from "../../Components/Search/Search";
+import { SkeletonCard } from "../../Components/Skeleton/Skeleton";
+import type { IDataApi, IData } from "../../Data/data";
 import './HomePage.scss';
-import { Search } from '../../Components/Search/Search';
-import { ErrorButton } from '../../Components/ErrorButton/ErrorButton';
-import { SkeletonCard } from '../../Components/Skeleton/Skeleton';
-import { ErrorBoundary } from '../../Components/ErrorBoundary/ErrorBoundary';
 
-class HomePage extends React.Component<unknown, IDataApi> {
+export class HomePage extends React.Component<unknown, IDataApi> {
   constructor(props: unknown) {
     super(props);
     this.state = {
@@ -25,7 +25,7 @@ class HomePage extends React.Component<unknown, IDataApi> {
     this.getApi();
   }
 
-  getApi = async (search?: string, isLoadMore: boolean = false) => {
+  getApi = async (search?: string, isLoadMore: boolean = false):Promise<void> => {
     const searchQuery = search !== undefined ? search : (localStorage.getItem('items') || '');
     const currentPage = isLoadMore ? this.state.currentPage + 1 : 1;
     
@@ -83,10 +83,8 @@ class HomePage extends React.Component<unknown, IDataApi> {
   
   return (
     <ErrorBoundary>
-    <main className="main">
-      <div className="home-page">
+      <section className="home-page">
         <Search onSearch={this.handleSearch}/>
-
         <ul className="cards-wrapper">
           {isLoading && !repos && skeletonItems } 
 
@@ -121,12 +119,12 @@ class HomePage extends React.Component<unknown, IDataApi> {
         </div>
 
         <ErrorButton />
-      </div>
-    </main>
+      </section>
     </ErrorBoundary>
   );
 }
 
 }
 
-export { HomePage };
+
+

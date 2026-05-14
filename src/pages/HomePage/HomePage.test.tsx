@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { HomePage } from './HomePage';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../__tests__/mocks/server';
+import { HomePage } from './HomePage';
 
 
 describe('HomePage Component', () => {

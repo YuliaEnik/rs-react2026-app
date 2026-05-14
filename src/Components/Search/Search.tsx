@@ -54,7 +54,7 @@ class Search extends React.Component<SearchProps, IState> {
 
   render() {
     return (
-      <header className="header">
+      <span className="search-wrap">
         <div className="search">
           <input
             type="text"
@@ -68,7 +68,7 @@ class Search extends React.Component<SearchProps, IState> {
           <button onClick={this.handleSearch} className="search-button">
           </button>
         </div>
-      </header>
+      </span>
     );
   }
 }

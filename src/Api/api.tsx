@@ -5,11 +5,8 @@ const getURL = async (search?: string, page: number = 1): Promise<{ data: IData[
   const query = search?.trim()|| '';
   const limit = 12;
   const skip = (page - 1) * limit;
-  const isTest = import.meta.env.MODE === 'test' || !!import.meta.env.VITEST;
 
-  const baseUrl = isTest
-      ? 'https://openaccess-api.clevelandart.org'
-      : '/api/cleveland';
+  const baseUrl = '/api/cleveland';
 
 
   let url: string;
