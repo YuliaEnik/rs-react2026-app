@@ -7,12 +7,14 @@
   --color-shadow: #4d4d4d;
   --color-button-active: #817f7f;
 
+  --max-width-content: 80rem;
+
   --card-width: 15rem;
-  --card-height: 30rem;
+  --card-height: 27rem;
   --border-radius: 0.5rem;
   --spacing-sm: 0.5rem;
-  --spacing-lg: 2rem;
-  --spacing-xl: 3rem;
+  --spacing-m: 1rem;
+  --spacing-xl: 2rem;
   --spacing-xxl: 4rem;
 
   --font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -55,8 +57,11 @@
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 20rem;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   background: var(--color-primary-dark);
 }
 
@@ -101,13 +106,15 @@ button {
 }
 
 .main {
-  min-height: calc(100vh - 3rem);
+  min-height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
+  padding-top: 3rem;
 }
 
 .footer {
   width: 100%;
+  margin-top: auto;
 }

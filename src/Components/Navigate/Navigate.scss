@@ -3,19 +3,16 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
-  width: 100%;
-  max-width: 80rem;
-  height: 100%;
+  gap: var(--spacing-m);
+  max-width: var(--max-width-content);
   margin: 0 auto;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--color-secondary-light);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: var(--font-weight-bold);
-  padding: 0.5rem;
   transition: color var(--transition-fast) ease;
   &:hover {
     color: var(--color-primary-dark);

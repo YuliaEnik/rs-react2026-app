@@ -23,7 +23,7 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
-    settings: {                      
+    settings: {
       react: {
         version: "detect",
       },

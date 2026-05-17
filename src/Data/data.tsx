@@ -18,3 +18,9 @@ export interface IDataApi {
 export interface CardState {
   imgError: boolean;
 }
+
+export interface IHomeState {
+  loading: boolean;
+  repos: IData[] | null;
+  error: string | null;
+}

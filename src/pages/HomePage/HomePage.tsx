@@ -1,130 +1,129 @@
-import React from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSearch, useNavigate } from "@tanstack/react-router";
 import { getURL } from "../../Api/api";
 import { Card } from "../../Components/Card/Card";
 import { ErrorBoundary } from "../../Components/ErrorBoundary/ErrorBoundary";
 import { ErrorButton } from "../../Components/ErrorButton/ErrorButton";
 import { Search } from "../../Components/Search/Search";
 import { SkeletonCard } from "../../Components/Skeleton/Skeleton";
-import type { IDataApi, IData } from "../../Data/data";
-import './HomePage.scss';
+import type { IData, IHomeState } from "../../Data/data";
+import "./HomePage.scss";
+import { Pagination } from "../../Components/Pagination/Pagination";
 
-export class HomePage extends React.Component<unknown, IDataApi> {
-  constructor(props: unknown) {
-    super(props);
-    this.state = {
-      repos: null,
-      isLoading: false,
-      currentPage: 1,
-      hasMore: true,
-      searchQuery: '',
-      errorMessage: null,
-    };
-  }
+const HomePage = () => {
+  const { page } = useSearch({ from: "/" });
+  const navigate = useNavigate({ from: "/" });
+  const [appState, setAppState] = useState<IHomeState>({
+    loading: true,
+    repos: null,
+    error: null,
+  });
 
-  componentDidMount(): void {
-    this.getApi();
-  }
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchQuery, setSearchQuery] = useState<string>(
+    () => localStorage.getItem("items") || "",
+  );
 
-  getApi = async (search?: string, isLoadMore: boolean = false):Promise<void> => {
-    const searchQuery = search !== undefined ? search : (localStorage.getItem('items') || '');
-    const currentPage = isLoadMore ? this.state.currentPage + 1 : 1;
-    
-    if (!isLoadMore) {
-      this.setState({
-        isLoading: true,
-        repos: null,
-        currentPage: 1,
-        searchQuery: searchQuery,
-        errorMessage: null,
-      });
-    } else {
-      this.setState({ isLoading: true, errorMessage: null });
-    }
+  const getApi = useCallback(async (): Promise<void> => {
+    setAppState((prevState) => ({
+      ...prevState,
+      loading: true,
+      error: null,
+    }));
 
     try {
-      const response = await getURL(searchQuery, currentPage);
-      
-      this.setState((prevState) => ({
-        repos: isLoadMore 
-          ? [...(prevState.repos || []), ...response.data]
-          : response.data,
-        isLoading: false,
-        currentPage: currentPage,
-        hasMore: response.hasMore,
-      }));
+      const response = await getURL(searchQuery, page);
+
+      if (response && response.data) {
+        setAppState({
+          loading: false,
+          repos: response.data,
+          error: null,
+        });
+        const limit = 12;
+        const totalCalc = Math.ceil(response.total / limit);
+        setTotalPages(totalCalc);
+      } else {
+        throw new Error("Invalid API response structure");
+      }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      console.error('API Error:', error);
-      this.setState({ 
-        isLoading: false, 
-        errorMessage: errorMessage,
-      });
+      setAppState((prevState) => ({
+        ...prevState,
+        loading: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      }));
     }
+  }, [searchQuery, page]);
+
+  useEffect(() => {
+    getApi();
+  }, [getApi]);
+
+  const handleSearch = (searchValue: string) => {
+    if (searchValue === searchQuery || appState.loading) return;
+    localStorage.setItem("items", searchValue);
+    setSearchQuery(searchValue);
+    navigate({
+      search: (prev) => ({ ...prev, page: 1 }),
+    });
   };
 
-  handleSearch = (searchValue: string) => {
-    if (searchValue === this.state.searchQuery) {
-      return; 
-    }
-    this.getApi(searchValue, false);
+  const handlePageChange = (newPage: number) => {
+    if (appState.loading) return;
+    navigate({
+      search: (prev) => ({ ...prev, page: newPage }),
+    });
   };
 
-  loadMore = () => {
-    if (!this.state.isLoading && this.state.hasMore) {
-      this.getApi(undefined, true);
-    }
-  };
+  const hasNoResults =
+    appState.repos &&
+    appState.repos.length === 0 &&
+    !appState.loading &&
+    searchQuery !== "";
+  const showError = appState.error && !appState.loading;
+  const skeletonItems = Array.from({ length: 12 }, (_, i) => (
+    <SkeletonCard key={i} />
+  ));
 
-  render() {
-  const { repos, isLoading, searchQuery, errorMessage, hasMore } = this.state;
-  const hasNoResults = repos && repos.length === 0 && !isLoading && searchQuery !== '';
-  const showError = errorMessage && !isLoading;
-  const skeletonItems = Array.from({ length: 12 }, (_, i) => <SkeletonCard key={i} />);
-  
   return (
     <ErrorBoundary>
       <section className="home-page">
-        <Search onSearch={this.handleSearch}/>
+        <Search onSearch={handleSearch} />
         <ul className="cards-wrapper">
-          {isLoading && !repos && skeletonItems } 
+          {appState.loading && !appState.repos && skeletonItems}
 
-          {!isLoading && hasNoResults && (
+          {!appState.loading && hasNoResults && (
             <div className="loading">
               <p>Sorry, nothing found for &quot;{searchQuery}&quot;</p>
             </div>
           )}
 
-          {!isLoading && showError && (
+          {showError && (
             <div className="error-message">
-              <p>{errorMessage}</p>
-              <button onClick={() => this.getApi(this.state.searchQuery, false)}>
-                Try Again
-              </button>
+              <p>{appState.error}</p>
+              <button onClick={() => getApi()}>Try Again</button>
             </div>
           )}
 
-          {repos && repos.map((cardData: IData) => (
-            <Card {...cardData} key={cardData.id} />
-          ))}
-
-           {isLoading && repos && skeletonItems.slice(0, 4)}
-
+          {appState.repos &&
+            appState.repos.map((cardData: IData) => (
+              <Card {...cardData} key={cardData.id} />
+            ))}
         </ul>
-        <div className="pagination">
-          {!isLoading && hasMore && repos && repos.length > 0 && (
-            <button onClick={this.loadMore}>
-              Load More
-            </button>
-          )}
-        </div>
-
+        {!appState.loading && appState.repos && appState.repos.length > 0 && (
+          <Pagination
+            page={page || 1}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
         <ErrorButton />
       </section>
     </ErrorBoundary>
   );
-}
+};
 
-}
-
-
-
+export { HomePage };

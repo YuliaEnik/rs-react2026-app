@@ -6,23 +6,23 @@
   justify-content: center;
   background: var(--color-secondary-bg);
   z-index: 100;
-  padding: 0 1rem 1rem;
+  padding: 0.5rem 1rem 0.7rem 1rem;
 }
 
 .search {
   height: 2.5rem;
   width: 100%;
-  max-width: 80rem;
+  max-width: var(--max-width-content);
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-m);
 }
 
 .search-form_input {
   height: 100%;
-  width: 60%;
-  padding: 0 1rem 0 3rem;
+  width: 50%;
+  padding: 0 2rem;
   font-size: 1rem;
   border: none;
   outline: none;

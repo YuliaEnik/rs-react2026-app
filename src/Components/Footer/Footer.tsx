@@ -1,23 +1,29 @@
 import type { JSX } from "react";
-import './Footer.scss'
+import "./Footer.scss";
 
-const Footer = ():JSX.Element => {
+const Footer = (): JSX.Element => {
   return (
     <section className="footer">
       <div className="footer-content">
+        <a
+          href="https://github.com"
+          target="_blank"
+          rel="noreferrer"
+          className="footer-link github-logo"
+          aria-label="GitHub Profile"
+        />
         2026
-      <a 
-        href="https://rs.school/courses/reactjs" 
-        target="_blank" 
-        rel="noreferrer" 
-        className="footer-link"
+        <a
+          href="https://rs.school/"
+          target="_blank"
+          rel="noreferrer"
+          className="footer-link"
         >
-          RS School React Course
+          RS School
         </a>
       </div>
     </section>
-  )
-
-}
+  );
+};
 
 export { Footer };

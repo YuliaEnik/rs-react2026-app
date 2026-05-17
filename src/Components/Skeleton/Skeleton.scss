@@ -4,7 +4,7 @@
   overflow: hidden;
   position: relative;
 
-  .skeleton-image, 
+  .skeleton-image,
   .skeleton-line {
     background: linear-gradient(
       90deg,
@@ -20,16 +20,22 @@
   .skeleton-image {
     width: 100%;
     height: 180px;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-m);
   }
 
   .skeleton-line {
     height: 1rem;
     margin-bottom: 0.8rem;
-    
-    &.author { width: 85%; }
-    &.title { width: 65%; }
-    &.year { width: 35%; }
+
+    &.author {
+      width: 85%;
+    }
+    &.title {
+      width: 65%;
+    }
+    &.year {
+      width: 35%;
+    }
   }
 }
 

@@ -1,15 +1,15 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
-import '../index.css'
-import { Navigation } from '../Components/Navigate/Navigate'
-import { Footer } from '../Components/Footer/Footer'
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import "../index.css";
+import { Navigation } from "../Components/Navigate/Navigate";
+import { Footer } from "../Components/Footer/Footer";
 
 export const Route = createRootRoute({
   component: () => (
     <>
-      <header className='header'>
+      <header className="header">
         <Navigation />
       </header>
-      <main className='main'>
+      <main className="main">
         <Outlet />
       </main>
       <footer>
@@ -17,4 +17,4 @@ export const Route = createRootRoute({
       </footer>
     </>
   ),
-})
+});
