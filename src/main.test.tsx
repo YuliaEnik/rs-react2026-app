@@ -12,7 +12,7 @@ describe("Application Root Initialization", () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const rootElement = document.getElementById("root");
-    
+
     expect(rootElement?.innerHTML).not.toBe("");
   });
 });

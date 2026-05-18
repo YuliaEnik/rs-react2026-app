@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "./Search.scss";
 
-type SearchProps = { 
-  onSearch: (value: string) => void 
+type SearchProps = {
+  onSearch: (value: string) => void;
 };
 
 const Search: React.FC<SearchProps> = ({ onSearch }) => {
@@ -20,7 +20,7 @@ const Search: React.FC<SearchProps> = ({ onSearch }) => {
     if (onSearch) {
       onSearch(trimmedValue);
     }
-    
+
     try {
       if (trimmedValue) {
         localStorage.setItem("items", trimmedValue);
@@ -54,10 +54,7 @@ const Search: React.FC<SearchProps> = ({ onSearch }) => {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
         />
-        <button
-          onClick={handleSearch}
-          className="search-button"
-        ></button>
+        <button onClick={handleSearch} className="search-button"></button>
       </div>
     </span>
   );

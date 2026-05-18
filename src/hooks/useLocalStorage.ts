@@ -11,17 +11,21 @@ export function useLocalStorage(key: string, initialValue: string) {
     }
   });
 
-  const setValue = useCallback((value: string | ((val: string) => string)) => {
-    try {
-      setStoredValue((prevState) => {
-        const valueToStore = value instanceof Function ? value(prevState) : value;
-        window.localStorage.setItem(key, valueToStore);
-        return valueToStore;
-      });
-    } catch (error) {
-      console.error(`Error setting localStorage key "${key}":`, error);
-    }
-  }, [key]);
+  const setValue = useCallback(
+    (value: string | ((val: string) => string)) => {
+      try {
+        setStoredValue((prevState) => {
+          const valueToStore =
+            value instanceof Function ? value(prevState) : value;
+          window.localStorage.setItem(key, valueToStore);
+          return valueToStore;
+        });
+      } catch (error) {
+        console.error(`Error setting localStorage key "${key}":`, error);
+      }
+    },
+    [key],
+  );
 
   return [storedValue, setValue] as const;
 }

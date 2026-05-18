@@ -16,7 +16,7 @@ describe("useLocalStorage", () => {
 
   it("should save new value", () => {
     const { result } = renderHook(() => useLocalStorage(KEY, ""));
-    
+
     act(() => {
       result.current[1]("new_val");
     });

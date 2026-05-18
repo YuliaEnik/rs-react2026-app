@@ -9,8 +9,8 @@ type ProductSearch = {
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): ProductSearch => {
-      if (search.page && isNaN(Number(search.page))) {
-      throw new Error('Invalid page parameter')
+    if (search.page && isNaN(Number(search.page))) {
+      throw new Error("Invalid page parameter");
     }
     return {
       page: Number(search.page) || 1,

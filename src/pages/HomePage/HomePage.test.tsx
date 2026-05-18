@@ -19,7 +19,7 @@ vi.mock("../../hooks/useLocalStorage", () => ({
 }));
 
 vi.mock("../../Components/Search/Search", () => ({
-  default: ({ onSearch }:{ onSearch: (value: string) => void }) => (
+  default: ({ onSearch }: { onSearch: (value: string) => void }) => (
     <div data-testid="search">
       <input
         data-testid="search-input"
@@ -56,10 +56,7 @@ vi.mock("../../Components/Card/Card", () => ({
     id: number;
     onClick: (id: number) => void;
   }) => (
-    <div
-      data-testid={`card-${id}`}
-      onClick={() => onClick(id)}
-    >
+    <div data-testid={`card-${id}`} onClick={() => onClick(id)}>
       {title}
     </div>
   ),

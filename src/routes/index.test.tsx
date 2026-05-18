@@ -1,5 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/react-router";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
 import { routeTree } from "../routeTree.gen";
 
@@ -17,18 +21,19 @@ function renderRouterWithUrl(initialUrl: string) {
 }
 
 describe("Home Route Search Params Validation", () => {
-
   it("should render HomePage when valid search parameters are provided", async () => {
     renderRouterWithUrl("/?page=2");
 
-    const homePageElement = await screen.findByText(/home/i); 
+    const homePageElement = await screen.findByText(/home/i);
     expect(homePageElement).toBeInTheDocument();
   });
 
   it("should render NotFoundPage when invalid search parameters trigger errorComponent", async () => {
-
     renderRouterWithUrl("/?page=1рррррр");
-    const errorHeading = await screen.findByRole("heading", { level: 1, name: "404" });
+    const errorHeading = await screen.findByRole("heading", {
+      level: 1,
+      name: "404",
+    });
     const errorMessage = screen.getByText(/page not found/i);
 
     expect(errorHeading).toBeInTheDocument();

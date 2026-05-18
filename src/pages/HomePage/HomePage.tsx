@@ -112,7 +112,7 @@ const HomePage = () => {
 
   const shouldShowSkeletons = useMemo(
     () => appState.loading && !appState.repos,
-    [appState.loading, appState.repos]
+    [appState.loading, appState.repos],
   );
 
   const hasNoResults = useMemo(
@@ -136,12 +136,11 @@ const HomePage = () => {
       <section className="home-page">
         <Search onSearch={handleSearch} />
         <div className="cards-content" onClick={handleMainPanelClick}>
-          <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()} >
-             {shouldShowSkeletons && 
+          <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()}>
+            {shouldShowSkeletons &&
               Array.from({ length: PAGINATION.SKELETON_COUNT }, (_, i) => (
                 <SkeletonCard key={i} />
-              ))
-            }
+              ))}
 
             {!appState.loading && hasNoResults && (
               <div className="loading">

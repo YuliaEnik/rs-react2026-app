@@ -3,7 +3,15 @@ import { describe, it, expect, vi } from "vitest";
 import Navigation from "./Navigate";
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ to, children, className }: { to: string; children: React.ReactNode; className?: string }) => (
+  Link: ({
+    to,
+    children,
+    className,
+  }: {
+    to: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
     <a href={to} className={className}>
       {children}
     </a>

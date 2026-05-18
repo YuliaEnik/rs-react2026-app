@@ -29,7 +29,7 @@ describe("Footer", () => {
   it("has all links with noreferrer", () => {
     render(<Footer />);
     const links = screen.getAllByRole("link");
-    links.forEach(link => {
+    links.forEach((link) => {
       expect(link).toHaveAttribute("rel", "noreferrer");
     });
   });
