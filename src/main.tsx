@@ -3,10 +3,12 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import React from "react";
+import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
 
 const router = createRouter({
   routeTree,
   defaultPreload: false,
+  defaultNotFoundComponent: () => <NotFoundPage />,
 });
 
 declare module "@tanstack/react-router" {

@@ -8,7 +8,6 @@ import SkeletonCard from "../../Components/Skeleton/Skeleton";
 import type { IData, IHomeState } from "../../Data/types";
 import "./HomePage.scss";
 import Pagination from "../../Components/Pagination/Pagination";
-
 import { ERROR_MESSAGES, PAGINATION, STORAGE_KEYS } from "../../Data/constants";
 import DetailsPage from "../DetailsPage/DetailsPage";
 
