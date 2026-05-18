@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { server } from "../../__tests__/mocks/server";
-import { HomePage } from "./HomePage";
+import HomePage from "./HomePage";
 import type { IData } from "../../Data/types";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -12,7 +12,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 vi.mock("../../Components/Search/Search", () => ({
-  default: ({ onSearch }) => (
+  default: ({ onSearch }:{ onSearch: (value: string) => void }) => (
     <div data-testid="search">
       <input
         data-testid="search-input"

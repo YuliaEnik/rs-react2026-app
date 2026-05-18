@@ -8,7 +8,7 @@ import SkeletonCard from "../../Components/Skeleton/Skeleton";
 import type { IData, IHomeState } from "../../Data/types";
 import "./HomePage.scss";
 import Pagination from "../../Components/Pagination/Pagination";
-import DetailsPage from "../Detailspage/DetailsPage";
+import DetailsPage from "../DetailsPage/DetailsPage";
 import { ERROR_MESSAGES, PAGINATION, STORAGE_KEYS } from "../../Data/constants";
 
 const HomePage = () => {
@@ -117,7 +117,7 @@ const HomePage = () => {
       appState.repos?.length === 0 && !appState.loading && searchQuery !== "",
     [appState.repos?.length, appState.loading, searchQuery],
   );
-  
+
   const showError = useMemo(
     () => !!appState.error && !appState.loading,
     [appState.error, appState.loading],
@@ -178,4 +178,4 @@ const HomePage = () => {
   );
 };
 
-export { HomePage };
+export default HomePage;

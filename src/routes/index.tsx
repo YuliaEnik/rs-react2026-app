@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HomePage } from "../pages/HomePage/HomePage";
+import HomePage from "../pages/HomePage/HomePage";
 
 type ProductSearch = {
   page?: number;
