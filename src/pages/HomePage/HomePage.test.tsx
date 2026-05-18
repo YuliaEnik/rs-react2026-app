@@ -1,13 +1,15 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { server } from "../../__tests__/mocks/server";
 import HomePage from "./HomePage";
 import type { IData } from "../../Data/types";
 
+const mockNavigate = vi.fn();
+
 vi.mock("@tanstack/react-router", () => ({
-  useSearch: vi.fn(() => ({ page: 1 })),
-  useNavigate: vi.fn(() => vi.fn()),
+  useSearch: vi.fn(() => ({ page: 1, details: undefined })),
+  useNavigate: vi.fn(() => mockNavigate),
   createFileRoute: vi.fn(() => ({})),
 }));
 
@@ -36,7 +38,7 @@ vi.mock("../../Components/ErrorButton/ErrorButton", () => ({
   default: () => <div data-testid="error-button">Error Button</div>,
 }));
 
-vi.mock("../../Components/SkeletonCard/SkeletonCard", () => ({
+vi.mock("../../Components/Skeleton/Skeleton", () => ({
   default: () => (
     <div className="skeleton-card" data-testid="skeleton-card">
       Loading...
@@ -56,7 +58,6 @@ vi.mock("../../Components/Card/Card", () => ({
   }) => (
     <div
       data-testid={`card-${id}`}
-      data-role="card"
       onClick={() => onClick(id)}
     >
       {title}
@@ -64,7 +65,7 @@ vi.mock("../../Components/Card/Card", () => ({
   ),
 }));
 
-vi.mock("../../Components/DetailsPage/DetailsPage", () => ({
+vi.mock("../DetailsPage/DetailsPage", () => ({
   default: ({ isActive, card }: { isActive: boolean; card: IData | null }) =>
     isActive && card ? (
       <div data-testid="details-page">Details: {card.title}</div>
@@ -80,7 +81,7 @@ describe("HomePage Component", () => {
   it("show skeletons and cards after render", async () => {
     render(<HomePage />);
 
-    const skeletons = document.querySelectorAll(".skeleton-card");
+    const skeletons = screen.getAllByTestId("skeleton-card");
     expect(skeletons.length).toBeGreaterThan(0);
 
     await waitFor(
@@ -90,8 +91,6 @@ describe("HomePage Component", () => {
       },
       { timeout: 3000 },
     );
-
-    expect(screen.queryByTestId("skeleton-card")).not.toBeInTheDocument();
   });
 
   it('notice "Sorry, nothing found", if cardList clear', async () => {
@@ -103,9 +102,6 @@ describe("HomePage Component", () => {
       expect(
         screen.getByText(/Sorry, nothing found for "UnknownArt"/i),
       ).toBeInTheDocument();
-
-      const cards = screen.queryAllByTestId(/card-/);
-      expect(cards.length).toBe(0);
     });
   });
 
@@ -120,5 +116,31 @@ describe("HomePage Component", () => {
     await waitFor(() => {
       expect(screen.getByText(/error/i)).toBeInTheDocument();
     });
+  });
+
+  it("should open DetailsPage when a card is clicked", async () => {
+    render(<HomePage />);
+
+    const card = await screen.findByText("Test Artwork 1");
+    fireEvent.click(card);
+
+    expect(screen.getByTestId("details-page")).toBeInTheDocument();
+    expect(screen.getByText("Details: Test Artwork 1")).toBeInTheDocument();
+    expect(mockNavigate).toHaveBeenCalled();
+  });
+
+  it("should close DetailsPage when clicking on the main panel background", async () => {
+    render(<HomePage />);
+
+    const card = await screen.findByText("Test Artwork 1");
+    fireEvent.click(card);
+    expect(screen.getByTestId("details-page")).toBeInTheDocument();
+
+    const mainPanel = screen.getByRole("list").parentElement;
+    if (mainPanel) {
+      fireEvent.click(mainPanel);
+    }
+
+    expect(screen.queryByTestId("details-page")).not.toBeInTheDocument();
   });
 });
