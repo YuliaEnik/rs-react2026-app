@@ -10,10 +10,12 @@ import "./HomePage.scss";
 import Pagination from "../../Components/Pagination/Pagination";
 import { ERROR_MESSAGES, PAGINATION, STORAGE_KEYS } from "../../Data/constants";
 import DetailsPage from "../DetailsPage/DetailsPage";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 const HomePage = () => {
   const { page } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
+  const [searchQuery, setSearchQuery] = useLocalStorage(STORAGE_KEYS.ITEMS, "");
   const [appState, setAppState] = useState<IHomeState>({
     loading: true,
     repos: null,
@@ -21,10 +23,6 @@ const HomePage = () => {
   });
 
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [searchQuery, setSearchQuery] = useState<string>(
-    () => localStorage.getItem("items") || "",
-  );
-
   const [showDetails, setShowDetails] = useState(false);
   const [selectedCard, setSelectedCard] = useState<IData | null>(null);
 
@@ -64,7 +62,6 @@ const HomePage = () => {
 
   const handleSearch = (searchValue: string) => {
     if (searchValue === searchQuery || appState.loading) return;
-    localStorage.setItem(STORAGE_KEYS.ITEMS, searchValue);
     setSearchQuery(searchValue);
     navigate({
       search: (prev) => ({ ...prev, page: 1 }),
@@ -112,6 +109,12 @@ const HomePage = () => {
       closeDetails();
     }
   };
+
+  const shouldShowSkeletons = useMemo(
+    () => appState.loading && !appState.repos,
+    [appState.loading, appState.repos]
+  );
+
   const hasNoResults = useMemo(
     () =>
       appState.repos?.length === 0 && !appState.loading && searchQuery !== "",
@@ -123,13 +126,6 @@ const HomePage = () => {
     [appState.error, appState.loading],
   );
 
-  const skeletonItems = useMemo(
-    () =>
-      Array.from({ length: PAGINATION.SKELETON_COUNT }, (_, i) => (
-        <SkeletonCard key={i} />
-      )),
-    [],
-  );
   const shouldShowPagination = useMemo(
     () => !appState.loading && appState.repos && appState.repos.length > 0,
     [appState.loading, appState.repos],
@@ -141,7 +137,11 @@ const HomePage = () => {
         <Search onSearch={handleSearch} />
         <div className="cards-content" onClick={handleMainPanelClick}>
           <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()} >
-            {appState.loading && !appState.repos && skeletonItems}
+             {shouldShowSkeletons && 
+              Array.from({ length: PAGINATION.SKELETON_COUNT }, (_, i) => (
+                <SkeletonCard key={i} />
+              ))
+            }
 
             {!appState.loading && hasNoResults && (
               <div className="loading">

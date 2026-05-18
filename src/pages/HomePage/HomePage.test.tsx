@@ -11,6 +11,11 @@ vi.mock("@tanstack/react-router", () => ({
   createFileRoute: vi.fn(() => ({})),
 }));
 
+const mockSearchQuery = vi.hoisted(() => vi.fn(() => ""));
+vi.mock("../../hooks/useLocalStorage", () => ({
+  useLocalStorage: () => [mockSearchQuery(), vi.fn()],
+}));
+
 vi.mock("../../Components/Search/Search", () => ({
   default: ({ onSearch }:{ onSearch: (value: string) => void }) => (
     <div data-testid="search">
@@ -68,11 +73,11 @@ vi.mock("../../Components/DetailsPage/DetailsPage", () => ({
 
 describe("HomePage Component", () => {
   beforeEach(() => {
-    localStorage.clear();
     vi.clearAllMocks();
+    mockSearchQuery.mockReturnValue("");
   });
 
-  it("show skeletons and caeds after rende", async () => {
+  it("show skeletons and cards after render", async () => {
     render(<HomePage />);
 
     const skeletons = document.querySelectorAll(".skeleton-card");
@@ -90,7 +95,7 @@ describe("HomePage Component", () => {
   });
 
   it('notice "Sorry, nothing found", if cardList clear', async () => {
-    localStorage.setItem("items", "UnknownArt");
+    mockSearchQuery.mockReturnValue("UnknownArt");
 
     render(<HomePage />);
 
