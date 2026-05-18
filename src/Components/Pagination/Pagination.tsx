@@ -6,7 +6,7 @@ type Props = {
   onPageChange: (page: number) => void;
 };
 
-export const Pagination = ({ page, totalPages, onPageChange }: Props) => {
+const Pagination = ({ page, totalPages, onPageChange }: Props) => {
   const handlePrevPage = () => {
     if (page > 1) {
       onPageChange(page - 1);
@@ -37,3 +37,5 @@ export const Pagination = ({ page, totalPages, onPageChange }: Props) => {
     </div>
   );
 };
+
+export default Pagination;

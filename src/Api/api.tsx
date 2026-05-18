@@ -1,4 +1,4 @@
-import type { IData } from "../Data/data";
+import type { IData } from "../Data/types";
 
 const getURL = async (
   search?: string,
@@ -8,7 +8,7 @@ const getURL = async (
     const query = search?.trim() || "";
     const limit = 12;
     const skip = (page - 1) * limit;
-    const fieldsParam = "id,title,creators,images,creation_date";
+    const fieldsParam = "id,title,creators,images,creation_date,description";
 
     let url: string;
     if (query) {
@@ -67,4 +67,4 @@ const getURL = async (
   }
 };
 
-export { getURL };
+export default getURL;

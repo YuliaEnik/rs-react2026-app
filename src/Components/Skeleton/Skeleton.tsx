@@ -9,4 +9,4 @@ const SkeletonCard = () => (
   </li>
 );
 
-export { SkeletonCard };
+export default SkeletonCard;

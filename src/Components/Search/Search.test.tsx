@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { Search } from "./Search";
+import Search from "./Search";
 
 describe("Search Component", () => {
   const mockOnSearch = vi.fn();

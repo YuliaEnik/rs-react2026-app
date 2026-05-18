@@ -1,46 +1,57 @@
-import React from "react";
-import type { CardState, IData } from "../../Data/data";
+import React, { useState } from "react";
+import type { CardState, IData } from "../../Data/types";
 import "./Card.scss";
 
-class Card extends React.Component<IData, CardState> {
-  constructor(props: IData) {
-    super(props);
-    this.state = {
-      imgError: false,
-    };
-  }
+const Card: React.FC<IData> = ({
+  id,
+  title,
+  creators,
+  creation_date,
+  images,
+  description,
+  onClick,
+  isSelected,
+}) => {
+  const [imgError, setImgError] = useState<CardState["imgError"]>(false);
 
-  render() {
-    return (
-      <li className="card-wrapper" data-testid="card">
-        <div className="card-image-box">
-          {this.props.images?.web?.url && !this.state.imgError ? (
-            <img
-              src={this.props.images.web.url}
-              alt={this.props.title}
-              onError={() => this.setState({ imgError: true })}
-              loading="lazy"
-            />
-          ) : (
-            <div className="image-placeholder">Image not available</div>
-          )}
+  const handleClick = () => {
+    if (onClick) {
+      onClick(id);
+    }
+  };
+
+  return (
+    <li className="card-wrapper" data-testid="card" onClick={handleClick}>
+      <div className="card-image-box">
+        {images?.web?.url && !imgError ? (
+          <img
+            src={images.web.url}
+            alt={title}
+            onError={() => setImgError(true)}
+            loading="lazy"
+          />
+        ) : (
+          <div className="image-placeholder">Image not available</div>
+        )}
+      </div>
+      <h3>
+        Author:{" "}
+        <i className="card-value">{creators?.[0]?.description || "Unknown"}</i>
+      </h3>
+      <h3>
+        Name: <i className="card-value">{title}</i>
+      </h3>
+      <h3>
+        Year: <i className="card-value">{creation_date || "Unknown"}</i>
+      </h3>
+      {isSelected && description && (
+        <div className="card-description">
+          <h3>Description:</h3>
+          <p>{description}</p>
         </div>
-        <h3>
-          Author:{" "}
-          <i className="card-value">
-            {this.props.creators?.[0]?.description || "Unknown"}
-          </i>
-        </h3>
-        <h3>
-          Name: <i className="card-value">{this.props.title}</i>
-        </h3>
-        <h3>
-          Year:{" "}
-          <i className="card-value">{this.props.creation_date || "Unknown"}</i>
-        </h3>
-      </li>
-    );
-  }
-}
+      )}
+    </li>
+  );
+};
 
-export { Card };
+export default Card;

@@ -3,18 +3,14 @@
   flex-direction: column;
   width: 100%;
   min-height: var(--card-height);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-m);
   gap: var(--spacing-sm);
   border-radius: var(--border-radius);
   font-size: var(--font-size-base);
-  transition: var(--transition-normal) ease-in-out;
 
   &:hover {
     box-shadow: var(--box-shadow-hover);
-    transform: scale(1.02);
-    transition:
-      transform var(--transition-normal) ease-in-out,
-      box-shadow var(--transition-fast) ease-in-out;
+    transition: box-shadow var(--transition-fast) ease-in-out;
   }
 }
 
@@ -30,7 +26,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    object-position: top center;
+    object-position: center;
     display: block;
   }
 

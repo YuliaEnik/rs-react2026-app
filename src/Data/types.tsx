@@ -4,6 +4,9 @@ export interface IData {
   creators?: Array<{ description: string }>;
   creation_date?: string;
   images?: { web?: { url?: string } };
+  description?: string;
+  onClick?: (id: number) => void;
+  isSelected?: boolean;
 }
 
 export interface IDataApi {
@@ -23,4 +26,10 @@ export interface IHomeState {
   loading: boolean;
   repos: IData[] | null;
   error: string | null;
+}
+
+export interface IDetails {
+  closeDetails: () => void;
+  card: IData | null;
+  isActive: boolean;
 }

@@ -1,0 +1,68 @@
+.modal-page-close {
+  position: fixed;
+  display: flex;
+  justify-content: right;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+}
+
+.modal-page {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 1rem;
+}
+
+.modal-page.active {
+  display: flex;
+  .card-wrapper {
+    pointer-events: none;
+    &:hover {
+      box-shadow: none;
+      transition: none;
+    }
+  }
+}
+
+.modal-page.inactive {
+  display: none;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  border-radius: var(--border-radius);
+  &:hover {
+    box-shadow: var(--box-shadow-hover);
+    transition: box-shadow var(--transition-fast) ease-in-out;
+  }
+}
+
+.modal-header {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.btn-modal {
+  height: 1rem;
+  width: 1rem;
+  &__img {
+    height: 1rem;
+    width: 1rem;
+  }
+  :hover {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 620px) {
+  .modal-page {
+    width: 100%;
+  }
+}

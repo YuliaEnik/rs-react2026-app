@@ -8,10 +8,32 @@
   padding: 0 2rem 2rem 2rem;
 }
 
+.cards-content {
+  margin: 5rem auto;
+  display: flex;
+  justify-content: flex-start;
+  gap: var(--spacing-m);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.cards-content:has(.modal-page:not(.active)) .cards-wrapper {
+  width: 100%;
+}
+
+.cards-content:has(.modal-page.active) .cards-wrapper {
+  width: 55%;
+}
+
 .cards-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  margin: 5rem auto;
-  gap: var(--spacing-xl);
-  width: 100%;
+  gap: var(--spacing-m);
+  flex: 1;
+}
+
+@media (max-width: 620px) {
+  .cards-content:has(.modal-page.active) .cards-wrapper {
+    width: 100%;
+  }
 }

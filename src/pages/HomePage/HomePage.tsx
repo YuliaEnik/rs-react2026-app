@@ -1,14 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearch, useNavigate } from "@tanstack/react-router";
-import { getURL } from "../../Api/api";
-import { Card } from "../../Components/Card/Card";
-import { ErrorBoundary } from "../../Components/ErrorBoundary/ErrorBoundary";
-import { ErrorButton } from "../../Components/ErrorButton/ErrorButton";
-import { Search } from "../../Components/Search/Search";
-import { SkeletonCard } from "../../Components/Skeleton/Skeleton";
-import type { IData, IHomeState } from "../../Data/data";
+import getURL from "../../Api/api";
+import Card from "../../Components/Card/Card";
+import ErrorBoundary from "../../Components/ErrorBoundary/ErrorBoundary";
+import Search from "../../Components/Search/Search";
+import SkeletonCard from "../../Components/Skeleton/Skeleton";
+import type { IData, IHomeState } from "../../Data/types";
 import "./HomePage.scss";
-import { Pagination } from "../../Components/Pagination/Pagination";
+import Pagination from "../../Components/Pagination/Pagination";
+import DetailsPage from "../Detailspage/DetailsPage";
+import { ERROR_MESSAGES, PAGINATION, STORAGE_KEYS } from "../../Data/constants";
 
 const HomePage = () => {
   const { page } = useSearch({ from: "/" });
@@ -23,6 +24,9 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState<string>(
     () => localStorage.getItem("items") || "",
   );
+
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<IData | null>(null);
 
   const getApi = useCallback(async (): Promise<void> => {
     setAppState((prevState) => ({
@@ -40,20 +44,16 @@ const HomePage = () => {
           repos: response.data,
           error: null,
         });
-        const limit = 12;
-        const totalCalc = Math.ceil(response.total / limit);
-        setTotalPages(totalCalc);
+        setTotalPages(Math.ceil(response.total / PAGINATION.LIMIT));
       } else {
-        throw new Error("Invalid API response structure");
+        throw new Error(ERROR_MESSAGES.INVALID_RESPONSE);
       }
     } catch (error) {
       setAppState((prevState) => ({
         ...prevState,
         loading: false,
         error:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
+          error instanceof Error ? error.message : ERROR_MESSAGES.UNEXPECTED,
       }));
     }
   }, [searchQuery, page]);
@@ -64,7 +64,7 @@ const HomePage = () => {
 
   const handleSearch = (searchValue: string) => {
     if (searchValue === searchQuery || appState.loading) return;
-    localStorage.setItem("items", searchValue);
+    localStorage.setItem(STORAGE_KEYS.ITEMS, searchValue);
     setSearchQuery(searchValue);
     navigate({
       search: (prev) => ({ ...prev, page: 1 }),
@@ -78,49 +78,101 @@ const HomePage = () => {
     });
   };
 
-  const hasNoResults =
-    appState.repos &&
-    appState.repos.length === 0 &&
-    !appState.loading &&
-    searchQuery !== "";
-  const showError = appState.error && !appState.loading;
-  const skeletonItems = Array.from({ length: 12 }, (_, i) => (
-    <SkeletonCard key={i} />
-  ));
+  const handleCardClick = useCallback(
+    (id: number) => {
+      const card = appState.repos?.find((p) => p.id === id);
+      if (card) {
+        setSelectedCard(card);
+        setShowDetails(true);
+      }
+      navigate({
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
+          details: id,
+        }),
+      });
+    },
+    [appState.repos, navigate],
+  );
+
+  const closeDetails = useCallback(() => {
+    setShowDetails(false);
+    setSelectedCard(null);
+    navigate({
+      search: (prev) => {
+        const newSearch = { ...prev };
+        delete newSearch.details;
+        return newSearch;
+      },
+    });
+  }, [navigate]);
+
+  const handleMainPanelClick = () => {
+    if (showDetails) {
+      closeDetails();
+    }
+  };
+  const hasNoResults = useMemo(
+    () =>
+      appState.repos?.length === 0 && !appState.loading && searchQuery !== "",
+    [appState.repos?.length, appState.loading, searchQuery],
+  );
+  
+  const showError = useMemo(
+    () => !!appState.error && !appState.loading,
+    [appState.error, appState.loading],
+  );
+
+  const skeletonItems = useMemo(
+    () =>
+      Array.from({ length: PAGINATION.SKELETON_COUNT }, (_, i) => (
+        <SkeletonCard key={i} />
+      )),
+    [],
+  );
+  const shouldShowPagination = useMemo(
+    () => !appState.loading && appState.repos && appState.repos.length > 0,
+    [appState.loading, appState.repos],
+  );
 
   return (
     <ErrorBoundary>
       <section className="home-page">
         <Search onSearch={handleSearch} />
-        <ul className="cards-wrapper">
-          {appState.loading && !appState.repos && skeletonItems}
+        <div className="cards-content" onClick={handleMainPanelClick}>
+          <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()} >
+            {appState.loading && !appState.repos && skeletonItems}
 
-          {!appState.loading && hasNoResults && (
-            <div className="loading">
-              <p>Sorry, nothing found for &quot;{searchQuery}&quot;</p>
-            </div>
-          )}
+            {!appState.loading && hasNoResults && (
+              <div className="loading">
+                <p>Sorry, nothing found for &quot;{searchQuery}&quot;</p>
+              </div>
+            )}
 
-          {showError && (
-            <div className="error-message">
-              <p>{appState.error}</p>
-              <button onClick={() => getApi()}>Try Again</button>
-            </div>
-          )}
+            {showError && (
+              <div className="error-message">
+                <p>{appState.error}</p>
+                <button onClick={() => getApi()}>Try Again</button>
+              </div>
+            )}
 
-          {appState.repos &&
-            appState.repos.map((cardData: IData) => (
-              <Card {...cardData} key={cardData.id} />
+            {appState.repos?.map((cardData: IData) => (
+              <Card {...cardData} key={cardData.id} onClick={handleCardClick} />
             ))}
-        </ul>
-        {!appState.loading && appState.repos && appState.repos.length > 0 && (
+          </ul>
+          <DetailsPage
+            isActive={showDetails}
+            closeDetails={closeDetails}
+            card={selectedCard}
+          />
+        </div>
+        {shouldShowPagination && (
           <Pagination
             page={page || 1}
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
         )}
-        <ErrorButton />
       </section>
     </ErrorBoundary>
   );

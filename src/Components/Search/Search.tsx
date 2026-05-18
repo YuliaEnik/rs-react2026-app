@@ -75,4 +75,4 @@ class Search extends React.Component<SearchProps, IState> {
   }
 }
 
-export { Search };
+export default Search;

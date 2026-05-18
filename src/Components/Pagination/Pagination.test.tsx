@@ -1,9 +1,8 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { Pagination } from "./Pagination";
+import Pagination from "./Pagination";
 
 describe("Pagination Component", () => {
-  // Тест 1: Проверяем, что компонент правильно отображает текущую и общую страницы
   it("renders correct page info text", () => {
     render(<Pagination page={2} totalPages={5} onPageChange={vi.fn()} />);
 
