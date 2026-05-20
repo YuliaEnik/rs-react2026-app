@@ -9,9 +9,9 @@ const DetailsPage = ({
   card,
   isActive,
 }: PropsWithChildren<IDetails>) => {
-  const className = `modal-page ${isActive ? CSS_CLASSES.ACTIVE : CSS_CLASSES.INACTIVE}`;
+  if (!isActive) return null;
 
-  if (!isActive || !card) return null;
+  const className = `modal-page ${isActive ? CSS_CLASSES.ACTIVE : CSS_CLASSES.INACTIVE}`;
 
   return (
     <div className={className}>

@@ -7,8 +7,13 @@ import type { IData } from "../../Data/types";
 
 const mockNavigate = vi.fn();
 
+const currentSearchParams = {
+  page: 1,
+  details: undefined as number | undefined,
+};
+
 vi.mock("@tanstack/react-router", () => ({
-  useSearch: vi.fn(() => ({ page: 1, details: undefined })),
+  useSearch: vi.fn(() => currentSearchParams),
   useNavigate: vi.fn(() => mockNavigate),
   createFileRoute: vi.fn(() => ({})),
 }));
@@ -54,9 +59,9 @@ vi.mock("../../Components/Card/Card", () => ({
   }: {
     title: string;
     id: number;
-    onClick: (id: number) => void;
+    onClick?: (id: number) => void;
   }) => (
-    <div data-testid={`card-${id}`} onClick={() => onClick(id)}>
+    <div data-testid={`card-${id}`} onClick={() => onClick?.(id)}>
       {title}
     </div>
   ),
@@ -73,6 +78,8 @@ describe("HomePage Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSearchQuery.mockReturnValue("");
+    currentSearchParams.page = 1;
+    currentSearchParams.details = undefined;
   });
 
   it("show skeletons and cards after render", async () => {
@@ -116,10 +123,13 @@ describe("HomePage Component", () => {
   });
 
   it("should open DetailsPage when a card is clicked", async () => {
-    render(<HomePage />);
+    const { rerender } = render(<HomePage />);
 
     const card = await screen.findByText("Test Artwork 1");
     fireEvent.click(card);
+
+    currentSearchParams.details = 1;
+    rerender(<HomePage />);
 
     expect(screen.getByTestId("details-page")).toBeInTheDocument();
     expect(screen.getByText("Details: Test Artwork 1")).toBeInTheDocument();
@@ -127,16 +137,22 @@ describe("HomePage Component", () => {
   });
 
   it("should close DetailsPage when clicking on the main panel background", async () => {
-    render(<HomePage />);
+    const { rerender } = render(<HomePage />);
 
     const card = await screen.findByText("Test Artwork 1");
     fireEvent.click(card);
+
+    currentSearchParams.details = 1;
+    rerender(<HomePage />);
     expect(screen.getByTestId("details-page")).toBeInTheDocument();
 
     const mainPanel = screen.getByRole("list").parentElement;
     if (mainPanel) {
       fireEvent.click(mainPanel);
     }
+
+    currentSearchParams.details = undefined;
+    rerender(<HomePage />);
 
     expect(screen.queryByTestId("details-page")).not.toBeInTheDocument();
   });

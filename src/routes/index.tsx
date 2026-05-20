@@ -12,6 +12,10 @@ export const Route = createFileRoute("/")({
     if (search.page && isNaN(Number(search.page))) {
       throw new Error("Invalid page parameter");
     }
+    if (search.details && isNaN(Number(search.details))) {
+      throw new Error("Invalid details parameter");
+    }
+
     return {
       page: Number(search.page) || 1,
       details: search.details ? Number(search.details) : undefined,

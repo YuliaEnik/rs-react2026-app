@@ -13,7 +13,7 @@ import DetailsPage from "../DetailsPage/DetailsPage";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 const HomePage = () => {
-  const { page } = useSearch({ from: "/" });
+  const { page, details } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
   const [searchQuery, setSearchQuery] = useLocalStorage(STORAGE_KEYS.ITEMS, "");
   const [appState, setAppState] = useState<IHomeState>({
@@ -23,13 +23,13 @@ const HomePage = () => {
   });
 
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [showDetails, setShowDetails] = useState(false);
   const [selectedCard, setSelectedCard] = useState<IData | null>(null);
 
   const getApi = useCallback(async (): Promise<void> => {
     setAppState((prevState) => ({
       ...prevState,
       loading: true,
+      repos: null,
       error: null,
     }));
 
@@ -50,6 +50,7 @@ const HomePage = () => {
       setAppState((prevState) => ({
         ...prevState,
         loading: false,
+        repos: null,
         error:
           error instanceof Error ? error.message : ERROR_MESSAGES.UNEXPECTED,
       }));
@@ -59,6 +60,12 @@ const HomePage = () => {
   useEffect(() => {
     getApi();
   }, [getApi]);
+
+  useEffect(() => {
+    if (!details) {
+      setSelectedCard(null);
+    }
+  }, [details]);
 
   const handleSearch = (searchValue: string) => {
     if (searchValue === searchQuery || appState.loading) return;
@@ -80,7 +87,6 @@ const HomePage = () => {
       const card = appState.repos?.find((p) => p.id === id);
       if (card) {
         setSelectedCard(card);
-        setShowDetails(true);
       }
       navigate({
         search: (prev: Record<string, unknown>) => ({
@@ -93,7 +99,6 @@ const HomePage = () => {
   );
 
   const closeDetails = useCallback(() => {
-    setShowDetails(false);
     setSelectedCard(null);
     navigate({
       search: (prev) => {
@@ -105,7 +110,7 @@ const HomePage = () => {
   }, [navigate]);
 
   const handleMainPanelClick = () => {
-    if (showDetails) {
+    if (details) {
       closeDetails();
     }
   };
@@ -160,7 +165,7 @@ const HomePage = () => {
             ))}
           </ul>
           <DetailsPage
-            isActive={showDetails}
+            isActive={!!details && !!selectedCard}
             closeDetails={closeDetails}
             card={selectedCard}
           />

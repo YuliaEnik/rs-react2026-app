@@ -1,35 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Search.scss";
-
-type SearchProps = {
-  onSearch: (value: string) => void;
-};
+import type { SearchProps } from "../../Data/types";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { STORAGE_KEYS } from "../../Data/constants";
 
 const Search: React.FC<SearchProps> = ({ onSearch }) => {
-  const [value, setValue] = useState<string>(() => {
-    try {
-      return localStorage.getItem("items") || "";
-    } catch {
-      return "";
-    }
-  });
+  const [value, setValue] = useLocalStorage(STORAGE_KEYS.ITEMS, "");
 
   const handleSearch = () => {
     const trimmedValue = value.trim();
-
     if (onSearch) {
       onSearch(trimmedValue);
     }
-
-    try {
-      if (trimmedValue) {
-        localStorage.setItem("items", trimmedValue);
-      } else {
-        localStorage.removeItem("items");
-      }
-    } catch (e) {
-      console.error("Could not save to localStorage", e);
-    }
+    setValue(trimmedValue);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

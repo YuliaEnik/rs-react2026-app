@@ -17,7 +17,11 @@ export function useLocalStorage(key: string, initialValue: string) {
         setStoredValue((prevState) => {
           const valueToStore =
             value instanceof Function ? value(prevState) : value;
-          window.localStorage.setItem(key, valueToStore);
+          if (valueToStore === "") {
+            window.localStorage.removeItem(key);
+          } else {
+            window.localStorage.setItem(key, valueToStore);
+          }
           return valueToStore;
         });
       } catch (error) {
