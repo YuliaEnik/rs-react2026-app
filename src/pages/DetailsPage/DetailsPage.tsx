@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from "react";
-import type { IDetails } from "../../Data/types";
-import "./DetailsPage.scss";
 import Card from "../../Components/Card/Card";
-import { CSS_CLASSES } from "../../Data/constants";
+import type { IDetails } from "../../types/types";
+import { CSS_CLASSES } from "../../constants/cssClasses";
+import "./DetailsPage.scss";
 
 const DetailsPage = ({
   closeDetails,

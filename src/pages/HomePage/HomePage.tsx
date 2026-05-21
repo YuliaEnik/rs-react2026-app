@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import getURL from "../../Api/api";
-import Card from "../../Components/Card/Card";
 import ErrorBoundary from "../../Components/ErrorBoundary/ErrorBoundary";
 import Search from "../../Components/Search/Search";
-import SkeletonCard from "../../Components/Skeleton/Skeleton";
-import type { IData, IHomeState } from "../../Data/types";
-import "./HomePage.scss";
+import CardList from "../../Components/CardList/CardList";
+import type { IData, IHomeState } from "../../types/types";
 import Pagination from "../../Components/Pagination/Pagination";
-import { ERROR_MESSAGES, PAGINATION, STORAGE_KEYS } from "../../Data/constants";
 import DetailsPage from "../DetailsPage/DetailsPage";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
+import { PAGINATION } from "../../constants/numbers";
+import { ERROR_MESSAGES } from "../../constants/text";
+import "./HomePage.scss";
 
 const HomePage = () => {
   const { page, details } = useSearch({ from: "/" });
@@ -93,6 +94,7 @@ const HomePage = () => {
           ...prev,
           details: id,
         }),
+        resetScroll: false,
       });
     },
     [appState.repos, navigate],
@@ -106,6 +108,7 @@ const HomePage = () => {
         delete newSearch.details;
         return newSearch;
       },
+      resetScroll: false,
     });
   }, [navigate]);
 
@@ -114,22 +117,6 @@ const HomePage = () => {
       closeDetails();
     }
   };
-
-  const shouldShowSkeletons = useMemo(
-    () => appState.loading && !appState.repos,
-    [appState.loading, appState.repos],
-  );
-
-  const hasNoResults = useMemo(
-    () =>
-      appState.repos?.length === 0 && !appState.loading && searchQuery !== "",
-    [appState.repos?.length, appState.loading, searchQuery],
-  );
-
-  const showError = useMemo(
-    () => !!appState.error && !appState.loading,
-    [appState.error, appState.loading],
-  );
 
   const shouldShowPagination = useMemo(
     () => !appState.loading && appState.repos && appState.repos.length > 0,
@@ -141,29 +128,14 @@ const HomePage = () => {
       <section className="home-page">
         <Search onSearch={handleSearch} />
         <div className="cards-content" onClick={handleMainPanelClick}>
-          <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()}>
-            {shouldShowSkeletons &&
-              Array.from({ length: PAGINATION.SKELETON_COUNT }, (_, i) => (
-                <SkeletonCard key={i} />
-              ))}
-
-            {!appState.loading && hasNoResults && (
-              <div className="loading">
-                <p>Sorry, nothing found for &quot;{searchQuery}&quot;</p>
-              </div>
-            )}
-
-            {showError && (
-              <div className="error-message">
-                <p>{appState.error}</p>
-                <button onClick={() => getApi()}>Try Again</button>
-              </div>
-            )}
-
-            {appState.repos?.map((cardData: IData) => (
-              <Card {...cardData} key={cardData.id} onClick={handleCardClick} />
-            ))}
-          </ul>
+          <CardList
+            loading={appState.loading}
+            repos={appState.repos}
+            error={appState.error}
+            searchQuery={searchQuery}
+            onCardClick={handleCardClick}
+            onRetry={getApi}
+          />
           <DetailsPage
             isActive={!!details && !!selectedCard}
             closeDetails={closeDetails}

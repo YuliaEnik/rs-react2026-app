@@ -1,3 +1,4 @@
+import { TEXT } from "../../constants/text";
 import "./Pagination.scss";
 
 type Props = {
@@ -22,7 +23,7 @@ const Pagination = ({ page, totalPages, onPageChange }: Props) => {
   return (
     <div className="pagination-controls">
       <button onClick={handlePrevPage} disabled={page === 1}>
-        &laquo; Prev
+        {TEXT.pagination.prev}
       </button>
       <span className="page-info">
         {" "}
@@ -32,7 +33,7 @@ const Pagination = ({ page, totalPages, onPageChange }: Props) => {
         onClick={handleNextPage}
         disabled={page === totalPages || totalPages === 0}
       >
-        Next &raquo;
+        {TEXT.pagination.next}
       </button>
     </div>
   );

@@ -26,3 +26,11 @@ export interface IDetails {
 export type SearchProps = {
   onSearch: (value: string) => void;
 };
+export interface CardListProps {
+  loading: boolean;
+  repos: IData[] | null;
+  error: string | null;
+  searchQuery: string;
+  onCardClick: (id: number) => void;
+  onRetry: () => void;
+}

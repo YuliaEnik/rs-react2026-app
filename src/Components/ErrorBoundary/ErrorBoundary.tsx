@@ -1,4 +1,5 @@
 import React from "react";
+import { TEXT } from "../../constants/text";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -39,9 +40,9 @@ class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         <div className="error-boundary">
-          <h2>Something went wrong</h2>
-          <p>{this.state.errorMessage || "An unexpected error occurred"}</p>
-          <button onClick={this.handleReset}>Try Again</button>
+          <h2>{TEXT.errorBoundary.heading}</h2>
+          <p>{this.state.errorMessage || TEXT.errorBoundary.fallbackMessage}</p>
+          <button onClick={this.handleReset}>{TEXT.catalog.tryAgainBtn}</button>
         </div>
       );
     }

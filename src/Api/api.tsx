@@ -1,4 +1,6 @@
-import type { IData } from "../Data/types";
+import { PAGINATION } from "../constants/numbers";
+import { ERROR_MESSAGES } from "../constants/text";
+import type { IData } from "../types/types";
 
 const getURL = async (
   search?: string,
@@ -6,7 +8,7 @@ const getURL = async (
 ): Promise<{ data: IData[]; hasMore: boolean; total: number }> => {
   try {
     const query = search?.trim() || "";
-    const limit = 12;
+    const limit = PAGINATION.LIMIT;
     const skip = (page - 1) * limit;
     const fieldsParam = "id,title,creators,images,creation_date,description";
 
@@ -21,17 +23,13 @@ const getURL = async (
 
     if (!res.ok) {
       if (res.status === 404) {
-        throw new Error("API endpoint not found. Please try again later.");
+        throw new Error(ERROR_MESSAGES.API_NOT_FOUND);
       } else if (res.status === 429) {
-        throw new Error(
-          "Too many requests. Please wait a moment and try again.",
-        );
+        throw new Error(ERROR_MESSAGES.API_TOO_MANY);
       } else if (res.status >= 500) {
-        throw new Error(
-          "Server error. Our team has been notified. Please try again later.",
-        );
+        throw new Error(ERROR_MESSAGES.API_SERVER_ERROR);
       } else {
-        throw new Error(`Request failed with status: ${res.status}`);
+        throw new Error(`${ERROR_MESSAGES.API_FAILED} ${res.status}`);
       }
     }
 

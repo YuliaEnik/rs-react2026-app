@@ -2,8 +2,8 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { server } from "../../__tests__/mocks/server";
+import type { IData } from "../../types/types";
 import HomePage from "./HomePage";
-import type { IData } from "../../Data/types";
 
 const mockNavigate = vi.fn();
 
@@ -43,28 +43,55 @@ vi.mock("../../Components/ErrorButton/ErrorButton", () => ({
   default: () => <div data-testid="error-button">Error Button</div>,
 }));
 
-vi.mock("../../Components/Skeleton/Skeleton", () => ({
-  default: () => (
-    <div className="skeleton-card" data-testid="skeleton-card">
-      Loading...
-    </div>
-  ),
-}));
-
-vi.mock("../../Components/Card/Card", () => ({
+vi.mock("../../Components/CardList/CardList", () => ({
   default: ({
-    title,
-    id,
-    onClick,
+    loading,
+    repos,
+    error,
+    searchQuery,
+    onCardClick,
   }: {
-    title: string;
-    id: number;
-    onClick?: (id: number) => void;
-  }) => (
-    <div data-testid={`card-${id}`} onClick={() => onClick?.(id)}>
-      {title}
-    </div>
-  ),
+    loading: boolean;
+    repos: IData[] | null;
+    error: string | null;
+    searchQuery: string;
+    onCardClick: (id: number) => void;
+  }) => {
+    if (loading && !repos) {
+      return (
+        <div className="skeleton-card" data-testid="skeleton-card">
+          Loading...
+        </div>
+      );
+    }
+    if (error && !loading) {
+      return (
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      );
+    }
+    if (repos?.length === 0 && !loading && searchQuery !== "") {
+      return (
+        <div className="loading">
+          <p>Sorry, nothing found for &quot;{searchQuery}&quot;</p>
+        </div>
+      );
+    }
+    return (
+      <ul data-testid="mock-cards-list">
+        {repos?.map((card) => (
+          <div
+            key={card.id}
+            data-testid={`card-${card.id}`}
+            onClick={() => onCardClick(card.id)}
+          >
+            {card.title}
+          </div>
+        ))}
+      </ul>
+    );
+  },
 }));
 
 vi.mock("../DetailsPage/DetailsPage", () => ({
@@ -146,7 +173,7 @@ describe("HomePage Component", () => {
     rerender(<HomePage />);
     expect(screen.getByTestId("details-page")).toBeInTheDocument();
 
-    const mainPanel = screen.getByRole("list").parentElement;
+    const mainPanel = screen.getByTestId("mock-cards-list").parentElement;
     if (mainPanel) {
       fireEvent.click(mainPanel);
     }

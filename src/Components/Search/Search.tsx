@@ -1,8 +1,9 @@
 import React from "react";
-import "./Search.scss";
-import type { SearchProps } from "../../Data/types";
+import type { SearchProps } from "../../types/types";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { STORAGE_KEYS } from "../../Data/constants";
+import { TEXT } from "../../constants/text";
+import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
+import "./Search.scss";
 
 const Search: React.FC<SearchProps> = ({ onSearch }) => {
   const [value, setValue] = useLocalStorage(STORAGE_KEYS.ITEMS, "");
@@ -32,7 +33,7 @@ const Search: React.FC<SearchProps> = ({ onSearch }) => {
           type="text"
           name="text"
           className="search-form_input"
-          placeholder="Search..."
+          placeholder={TEXT.search.placeholder}
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}

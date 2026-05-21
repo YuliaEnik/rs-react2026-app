@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import type { CardState, IData } from "../../Data/types";
+import type { CardState, IData } from "../../types/types";
 import "./Card.scss";
+import { TEXT } from "../../constants/text";
 
 const Card: React.FC<IData> = ({
   id,
@@ -31,22 +32,23 @@ const Card: React.FC<IData> = ({
             loading="lazy"
           />
         ) : (
-          <div className="image-placeholder">Image not available</div>
+          <div className="image-placeholder">{TEXT.card.imageNotAvailable}</div>
         )}
       </div>
       <h3>
-        Author:{" "}
+        {TEXT.card.author}{" "}
         <i className="card-value">{creators?.[0]?.description || "Unknown"}</i>
       </h3>
       <h3>
-        Name: <i className="card-value">{title}</i>
+        {TEXT.card.name} <i className="card-value">{title}</i>
       </h3>
       <h3>
-        Year: <i className="card-value">{creation_date || "Unknown"}</i>
+        {TEXT.card.year}{" "}
+        <i className="card-value">{creation_date || "Unknown"}</i>
       </h3>
       {isSelected && description && (
         <div className="card-description">
-          <h3>Description:</h3>
+          <h3>{TEXT.card.description}</h3>
           <p>{description}</p>
         </div>
       )}

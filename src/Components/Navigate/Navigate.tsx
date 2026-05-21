@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { TEXT } from "../../constants/text";
 import "./Navigate.scss";
 
 function Navigation() {
@@ -9,14 +10,14 @@ function Navigation() {
         className="nav-link"
         activeProps={{ className: "nav-link_active" }}
       >
-        Home
+        {TEXT.navigation.home}
       </Link>
       <Link
         to="/about"
         className="nav-link"
         activeProps={{ className: "nav-link_active" }}
       >
-        About us
+        {TEXT.navigation.about}
       </Link>
     </nav>
   );

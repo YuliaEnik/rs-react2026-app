@@ -1,4 +1,6 @@
 import type { JSX } from "react";
+import { LINKS } from "../../constants/api";
+import { TEXT } from "../../constants/text";
 import "./Footer.scss";
 
 const Footer = (): JSX.Element => {
@@ -6,20 +8,20 @@ const Footer = (): JSX.Element => {
     <section className="footer">
       <div className="footer-content">
         <a
-          href="https://github.com"
+          href={LINKS.creatorGitHub}
           target="_blank"
           rel="noreferrer"
           className="footer-link github-logo"
-          aria-label="GitHub Profile"
+          aria-label={TEXT.footer.gitHubLabel}
         />
-        2026
+        {TEXT.footer.year}
         <a
-          href="https://rs.school/"
+          href={LINKS.rsSchool}
           target="_blank"
           rel="noreferrer"
           className="footer-link"
         >
-          RS School
+          {TEXT.footer.schoolName}
         </a>
       </div>
     </section>

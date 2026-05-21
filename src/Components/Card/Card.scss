@@ -11,6 +11,7 @@
   &:hover {
     box-shadow: var(--box-shadow-hover);
     transition: box-shadow var(--transition-fast) ease-in-out;
+    cursor: pointer;
   }
 }
 
