@@ -94,7 +94,6 @@ const HomePage = () => {
           ...prev,
           details: id,
         }),
-        resetScroll: false,
       });
     },
     [appState.repos, navigate],
@@ -108,7 +107,6 @@ const HomePage = () => {
         delete newSearch.details;
         return newSearch;
       },
-      resetScroll: false,
     });
   }, [navigate]);
 
