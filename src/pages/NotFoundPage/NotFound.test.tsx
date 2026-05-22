@@ -7,6 +7,7 @@ import {
 import { describe, expect, it } from "vitest";
 import { routeTree } from "../../routeTree.gen";
 import NotFoundPage from "./NotFoundPage";
+import { ThemeProvider } from "../../context/ThemeProvider";
 
 function renderRouterWithUrl(initialUrl: string) {
   const testHistory = createMemoryHistory({
@@ -19,7 +20,11 @@ function renderRouterWithUrl(initialUrl: string) {
     defaultNotFoundComponent: () => <NotFoundPage />,
   });
 
-  return render(<RouterProvider router={router} />);
+  return render(
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>,
+  );
 }
 
 describe("Feature 4: 404 Not Found Page Tests", () => {

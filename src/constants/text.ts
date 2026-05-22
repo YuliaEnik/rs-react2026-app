@@ -14,6 +14,10 @@ export const TEXT = {
     home: "Home",
     about: "About us",
   },
+  theme: {
+    light: "Light",
+    dark: "Dark",
+  },
   footer: {
     year: "2026",
     schoolName: "RS School",

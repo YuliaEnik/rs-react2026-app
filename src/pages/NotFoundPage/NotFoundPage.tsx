@@ -1,18 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import "./NotFoundPage.scss";
+import { TEXT } from "../../constants/text";
 
 const NotFoundPage = () => {
+  const { notFound } = TEXT.pages;
+
   return (
     <div className="not-found-page">
       <div className="not-found-content">
-        <h1>404</h1>
-        <h2>Page Not Found</h2>
-        <p>
-          Oops! The page you&apos;re looking for doesn&apos;t exist or has been
-          moved.
-        </p>
+        <h1>{notFound.heading}</h1>
+        <h2>{notFound.subheading}</h2>
+        <p>{notFound.message}</p>
         <Link to="/" className="home-link">
-          ← Back to Home
+          {notFound.backLink}
         </Link>
       </div>
     </div>

@@ -34,3 +34,9 @@ export interface CardListProps {
   onCardClick: (id: number) => void;
   onRetry: () => void;
 }
+
+export interface ICheckbox {
+  id: number;
+  checked?: boolean;
+  onChange?: () => void;
+}

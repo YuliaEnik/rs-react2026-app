@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
 import { routeTree } from "../routeTree.gen";
+import { ThemeProvider } from "../context/ThemeProvider";
 
 function renderRouterWithUrl(initialUrl: string) {
   const testHistory = createMemoryHistory({
@@ -17,7 +18,11 @@ function renderRouterWithUrl(initialUrl: string) {
     history: testHistory,
   });
 
-  return render(<RouterProvider router={router} />);
+  return render(
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>,
+  );
 }
 
 describe("Home Route Search Params Validation", () => {

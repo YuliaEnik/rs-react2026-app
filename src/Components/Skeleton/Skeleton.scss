@@ -1,6 +1,6 @@
 .skeleton-card {
   background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--skeleton-border);
   overflow: hidden;
   position: relative;
 
@@ -8,9 +8,9 @@
   .skeleton-line {
     background: linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.05) 25%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0.05) 75%
+      var(--skeleton-shimmer-edge) 25%,
+      var(--skeleton-shimmer-center) 50%,
+      var(--skeleton-shimmer-edge) 75%
     );
     background-size: 200% 100%;
     animation: shimmer 2s infinite linear;

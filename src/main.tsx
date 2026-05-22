@@ -4,6 +4,7 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import React from "react";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
+import { ThemeProvider } from "./context/ThemeProvider";
 
 const router = createRouter({
   routeTree,
@@ -19,6 +20,8 @@ declare module "@tanstack/react-router" {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </React.StrictMode>,
 );

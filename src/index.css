@@ -1,14 +1,15 @@
 :root {
   --color-primary-dark: #213547;
-  --color-secondary-bg: #c6926e;
+  --color-primary-light: #d6d6cb;
+  --bg-secondary-dark: #b78463;
+  --bg-secondary-light: #8c8c8d;
   --color-primary: #bdbdbd;
   --color-secondary: #929e9f;
-  --color-secondary-light: #e1ccbd;
+  --color-secondary-light: #e0d8d1;
   --color-shadow: #4d4d4d;
   --color-button-active: #817f7f;
 
   --max-width-content: 80rem;
-
   --card-width: 15rem;
   --card-height: 27rem;
   --border-radius: 0.5rem;
@@ -29,7 +30,38 @@
   --transition-fast: 0.4s;
 
   --box-shadow-hover: 0 0 0 0.05rem #7f827f;
+}
 
+:root,
+[data-theme="dark"] {
+  --bg-color: var(--color-primary-dark);
+  --text-color: #bdbdbd;
+  --bg-color-secondary: var(--bg-secondary-dark);
+  --color-search-bg: var(--bg-secondary-dark);
+  --skeleton-bg: rgba(255, 255, 255, 0.03);
+  --skeleton-border: rgba(255, 255, 255, 0.05);
+  --skeleton-shimmer-edge: rgba(255, 255, 255, 0.05);
+  --skeleton-shimmer-center: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] {
+  --bg-color: var(--color-primary-light);
+  --text-color: #213547;
+  --bg-color-secondary: var(--bg-secondary-light);
+  --color-search-bg: var(--bg-secondary-light);
+  --skeleton-bg: rgba(33, 53, 71, 0.06);
+  --skeleton-border: rgba(33, 53, 71, 0.1);
+  --skeleton-shimmer-edge: rgba(33, 53, 71, 0.05);
+  --skeleton-shimmer-center: rgba(33, 53, 71, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
   height: 100%;
   width: 100%;
   font-family: var(--font-family);
@@ -43,26 +75,10 @@
   -webkit-text-size-adjust: 100%;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 #root {
   height: 100%;
   width: 100%;
   margin: 0 auto;
-}
-
-body {
-  margin: 0;
-  min-width: 20rem;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  background: var(--color-primary-dark);
 }
 
 h1 {
@@ -91,6 +107,20 @@ button {
   }
 }
 
+body {
+  margin: 0;
+  min-width: 20rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
 .header {
   display: flex;
   justify-content: center;
@@ -100,8 +130,8 @@ button {
   right: 0;
   height: 3rem;
   width: 100%;
-  background-color: var(--color-secondary-bg);
-  box-shadow: 0 0.1rem 0 var(--color-secondary-bg);
+  background-color: var(--bg-color-secondary);
+  box-shadow: 0 0.1rem 0 var(--bg-color-secondary);
   z-index: 1000;
 }
 
