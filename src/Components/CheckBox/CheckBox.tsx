@@ -1,4 +1,5 @@
 import type { ICheckbox } from "../../types/types";
+import "./CheckBox.scss";
 
 const Checkbox: React.FC<ICheckbox> = (props: ICheckbox) => {
   const idCheckbox = String(props.id);
