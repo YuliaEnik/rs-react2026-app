@@ -35,6 +35,11 @@ export const TEXT = {
     description: "Description:",
     unknown: "Unknown",
   },
+  selectionFlyout: {
+    count: "Selected cards:",
+    buttonUnselect: "Unselect",
+    buttonDownLoad: "DownLoad",
+  },
   pages: {
     about: {
       title: "About the Project",

@@ -4,7 +4,7 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import React from "react";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
-import { ThemeProvider } from "./context/ThemeProvider";
+import { ThemeProvider } from "./themeContext/ThemeProvider";
 
 const router = createRouter({
   routeTree,

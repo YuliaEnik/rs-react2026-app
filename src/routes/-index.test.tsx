@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
 import { routeTree } from "../routeTree.gen";
-import { ThemeProvider } from "../context/ThemeProvider";
+import { ThemeProvider } from "../themeContext/ThemeProvider";
 
 function renderRouterWithUrl(initialUrl: string) {
   const testHistory = createMemoryHistory({

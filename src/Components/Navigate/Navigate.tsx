@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { TEXT } from "../../constants/text";
 import "./Navigate.scss";
-import { useAppTheme } from "../../context/ThemeContext";
+import { useAppTheme } from "../../themeContext/ThemeContext";
 
 function Navigation() {
   const { theme, toggleTheme } = useAppTheme();

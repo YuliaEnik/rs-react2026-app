@@ -8,11 +8,10 @@ import "./Card.scss";
 const Card: React.FC<IData> = (props: IData) => {
   const [imgError, setImgError] = useState<CardState["imgError"]>(false);
 
-  const selectedIds = useStore((state) => state.selectedIds);
+  const selectedCards = useStore((state) => state.selectedCards);
   const toggleCard = useStore((state) => state.toggleCard);
 
-  const isChecked = selectedIds.includes(props.id);
-
+  const isChecked = selectedCards.some((item) => item.id === props.id);
   const handleClick = () => {
     if (props.onClick) {
       props.onClick(props.id);
@@ -20,7 +19,7 @@ const Card: React.FC<IData> = (props: IData) => {
   };
 
   const handleCheckboxChange = () => {
-    toggleCard(props.id);
+    toggleCard(props);
   };
 
   return (

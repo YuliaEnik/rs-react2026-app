@@ -11,6 +11,7 @@ import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 import { PAGINATION } from "../../constants/numbers";
 import { ERROR_MESSAGES } from "../../constants/text";
+import { SelectionFlyout } from "../../Components/SelectionFlyout/SelectionFlyout";
 import "./HomePage.scss";
 
 const HomePage = () => {
@@ -148,6 +149,7 @@ const HomePage = () => {
           />
         )}
       </section>
+      <SelectionFlyout />
     </ErrorBoundary>
   );
 };

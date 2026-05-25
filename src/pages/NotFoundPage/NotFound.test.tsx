@@ -7,7 +7,7 @@ import {
 import { describe, expect, it } from "vitest";
 import { routeTree } from "../../routeTree.gen";
 import NotFoundPage from "./NotFoundPage";
-import { ThemeProvider } from "../../context/ThemeProvider";
+import { ThemeProvider } from "../../themeContext/ThemeProvider";
 
 function renderRouterWithUrl(initialUrl: string) {
   const testHistory = createMemoryHistory({

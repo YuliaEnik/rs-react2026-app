@@ -62,12 +62,10 @@
 }
 
 .btn-modal {
-  height: 1rem;
-  width: 1rem;
-  &__img {
-    height: 1rem;
-    width: 1rem;
-  }
+  height: 2rem;
+  width: 2rem;
+  padding: 0.5rem;
+
   &:hover {
     cursor: pointer;
   }

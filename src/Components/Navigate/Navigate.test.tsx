@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import Navigation from "./Navigate";
 import React from "react";
-import { ThemeProvider } from "../../context/ThemeProvider";
+import { ThemeProvider } from "../../themeContext/ThemeProvider";
 
 vi.mock("@tanstack/react-router", () => ({
   Link: ({

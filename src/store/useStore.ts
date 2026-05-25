@@ -1,19 +1,22 @@
 import { create } from "zustand";
+import type { IData } from "../types/types";
 
 interface CardStore {
-  selectedIds: number[];
-  toggleCard: (id: number) => void;
+  selectedCards: IData[];
+  toggleCard: (card: IData) => void;
+  unselectAll: () => void;
 }
 
 export const useStore = create<CardStore>((set) => ({
-  selectedIds: [],
-  toggleCard: (id) =>
+  selectedCards: [],
+  toggleCard: (card) =>
     set((state) => {
-      const isExist = state.selectedIds.includes(id);
+      const isExist = state.selectedCards.some((item) => item.id === card.id);
       return {
-        selectedIds: isExist
-          ? state.selectedIds.filter((itemIds) => itemIds !== id)
-          : [...state.selectedIds, id],
+        selectedCards: isExist
+          ? state.selectedCards.filter((item) => item.id !== card.id)
+          : [...state.selectedCards, card],
       };
     }),
+  unselectAll: () => set({ selectedCards: [] }),
 }));
