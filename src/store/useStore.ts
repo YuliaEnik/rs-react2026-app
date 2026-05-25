@@ -1,14 +1,19 @@
-import { create } from "zustand";
+import { create, type StateCreator } from "zustand";
 import type { IData } from "../types/types";
-
-interface CardStore {
+interface SelectionSlice {
   selectedCards: IData[];
   toggleCard: (card: IData) => void;
   unselectAll: () => void;
 }
 
-export const useStore = create<CardStore>((set) => ({
+const createSelectionSlice: StateCreator<
+  SelectionSlice,
+  [],
+  [],
+  SelectionSlice
+> = (set) => ({
   selectedCards: [],
+
   toggleCard: (card) =>
     set((state) => {
       const isExist = state.selectedCards.some((item) => item.id === card.id);
@@ -18,5 +23,10 @@ export const useStore = create<CardStore>((set) => ({
           : [...state.selectedCards, card],
       };
     }),
+
   unselectAll: () => set({ selectedCards: [] }),
+});
+
+export const useStore = create<SelectionSlice>()((...a) => ({
+  ...createSelectionSlice(...a),
 }));

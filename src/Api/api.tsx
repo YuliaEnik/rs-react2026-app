@@ -14,7 +14,7 @@ const getURL = async (
 
     let url: string;
     if (query) {
-      url = `/api/artworks?q=${encodeURIComponent(query)}&has_image=1&limit=50&fields=${fieldsParam}`;
+      url = `/api/artworks?q=${encodeURIComponent(query)}&has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`;
     } else {
       url = `/api/artworks?has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`;
     }
@@ -35,29 +35,12 @@ const getURL = async (
 
     const data = await res.json();
 
-    let results = data.data || [];
-
-    if (query) {
-      const lowerQuery = query.toLowerCase();
-      results = data.data.filter((item: IData) => {
-        const title = (item.title || "").toLowerCase();
-        const author = (item.creators?.[0]?.description || "").toLowerCase();
-        return title.includes(lowerQuery) || author.includes(lowerQuery);
-      });
-
-      const paginated = results.slice(skip, skip + limit);
-
-      return {
-        data: paginated as IData[],
-        hasMore: paginated.length === limit,
-        total: results.length,
-      };
-    }
+    const results = data.data || [];
 
     return {
       data: results as IData[],
       hasMore: results.length === limit,
-      total: data.info?.total || 0,
+      total: data.info?.total || data.total || results.length,
     };
   } catch (error) {
     console.error("API Error:", error);

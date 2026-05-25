@@ -6,8 +6,6 @@
   width: 100vw;
   background-color: var(--bg-color-secondary);
   padding: var(--spacing-m) var(--spacing-xl);
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
   z-index: 999;
   transition: background-color var(--transition-fast);
 }
