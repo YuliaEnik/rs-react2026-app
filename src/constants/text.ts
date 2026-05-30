@@ -40,7 +40,7 @@ export const TEXT = {
       appHeading: "The Application",
       appTextPreLink:
         "This application was developed by a student as part of the educational program",
-      courseLinkText: " RS School React Course ",
+      courseLinkText: "RS School React Course",
       appTextPostLink:
         ". Using The project successfully integrates recent and essential React development best practices. More information about the student can be found via the GitHub link below.",
       footerMessage:
@@ -51,7 +51,7 @@ export const TEXT = {
       subheading: "Page Not Found",
       message:
         "Oops! The page you're looking for doesn't exist or has been moved.",
-      backLink: "← Back to Home",
+      backLink: "Back to Home",
     },
   },
 } as const;
