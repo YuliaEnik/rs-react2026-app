@@ -2,19 +2,19 @@ import { PAGINATION } from "../constants/numbers";
 import { ERROR_MESSAGES } from "../constants/text";
 import type { IData } from "../types/types";
 
-const getURL = async (
+const fetchArtworks = async (
   search?: string,
   page: number = 1,
 ): Promise<{ data: IData[]; hasMore: boolean; total: number }> => {
   try {
     const query = search?.trim() || "";
-    const limit = PAGINATION.LIMIT;
+    const limit = PAGINATION.CARDS_PER_PAGE;
     const skip = (page - 1) * limit;
     const fieldsParam = "id,title,creators,images,creation_date,description";
 
     let url: string;
     if (query) {
-      url = `/api/artworks?q=${encodeURIComponent(query)}&has_image=1&limit=50&fields=${fieldsParam}`;
+      url = `/api/artworks?q=${encodeURIComponent(query)}&has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`;
     } else {
       url = `/api/artworks?has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`;
     }
@@ -35,29 +35,12 @@ const getURL = async (
 
     const data = await res.json();
 
-    let results = data.data || [];
-
-    if (query) {
-      const lowerQuery = query.toLowerCase();
-      results = data.data.filter((item: IData) => {
-        const title = (item.title || "").toLowerCase();
-        const author = (item.creators?.[0]?.description || "").toLowerCase();
-        return title.includes(lowerQuery) || author.includes(lowerQuery);
-      });
-
-      const paginated = results.slice(skip, skip + limit);
-
-      return {
-        data: paginated as IData[],
-        hasMore: paginated.length === limit,
-        total: results.length,
-      };
-    }
+    const results = data.data || [];
 
     return {
-      data: results as IData[],
+      data: results,
       hasMore: results.length === limit,
-      total: data.info?.total || 0,
+      total: data.info?.total || data.total || results.length,
     };
   } catch (error) {
     console.error("API Error:", error);
@@ -65,4 +48,4 @@ const getURL = async (
   }
 };
 
-export default getURL;
+export default fetchArtworks;

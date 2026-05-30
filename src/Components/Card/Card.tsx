@@ -36,19 +36,22 @@ const Card: React.FC<IData> = ({
         )}
       </div>
       <h3>
-        {TEXT.card.author}{" "}
-        <i className="card-value">{creators?.[0]?.description || "Unknown"}</i>
+        {TEXT.card.author}
+        <i className="card-value">
+          {creators?.[0]?.description || TEXT.card.unknown}
+        </i>
       </h3>
       <h3>
-        {TEXT.card.name} <i className="card-value">{title}</i>
+        {TEXT.card.name}
+        <i className="card-value">{title}</i>
       </h3>
       <h3>
-        {TEXT.card.year}{" "}
-        <i className="card-value">{creation_date || "Unknown"}</i>
+        {TEXT.card.year}
+        <i className="card-value">{creation_date || TEXT.card.unknown}</i>
       </h3>
       {isSelected && description && (
         <div className="card-description">
-          <h3>{TEXT.card.description}</h3>
+          <h3>{TEXT.card.description || TEXT.card.unknown}</h3>
           <p>{description}</p>
         </div>
       )}

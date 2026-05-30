@@ -3,21 +3,23 @@ import { TEXT } from "../../constants/text";
 import "./Navigate.scss";
 
 function Navigation() {
+  const { navigation } = TEXT;
+
   return (
     <nav className="nav">
       <Link
-        to="/"
+        to="/catalog"
         className="nav-link"
         activeProps={{ className: "nav-link_active" }}
       >
-        {TEXT.navigation.home}
+        {navigation.home}
       </Link>
       <Link
         to="/about"
         className="nav-link"
         activeProps={{ className: "nav-link_active" }}
       >
-        {TEXT.navigation.about}
+        {navigation.about}
       </Link>
     </nav>
   );

@@ -1,22 +1,27 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearch, useNavigate } from "@tanstack/react-router";
-import getURL from "../../Api/api";
-import ErrorBoundary from "../../Components/ErrorBoundary/ErrorBoundary";
-import Search from "../../Components/Search/Search";
-import CardList from "../../Components/CardList/CardList";
-import type { IData, IHomeState } from "../../types/types";
-import Pagination from "../../Components/Pagination/Pagination";
-import DetailsPage from "../DetailsPage/DetailsPage";
+import { type JSX, useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, Outlet } from "@tanstack/react-router";
+import { Route } from "../../routes/catalog/route";
+import fetchArtworks from "../../Api/api";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import CardList from "../../Components/CardList/CardList";
+import ErrorBoundary from "../../Components/ErrorBoundary/ErrorBoundary";
+import Pagination from "../../Components/Pagination/Pagination";
+import Search from "../../Components/Search/Search";
 import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 import { PAGINATION } from "../../constants/numbers";
 import { ERROR_MESSAGES } from "../../constants/text";
+import type { IHomeState } from "../../types/types";
 import "./HomePage.scss";
 
-const HomePage = () => {
-  const { page, details } = useSearch({ from: "/" });
-  const navigate = useNavigate({ from: "/" });
-  const [searchQuery, setSearchQuery] = useLocalStorage(STORAGE_KEYS.ITEMS, "");
+function HomePage(): JSX.Element {
+  const navigate = useNavigate({ from: "/catalog" });
+
+  const { page } = Route.useSearch();
+
+  const [searchQuery, setSearchQuery] = useLocalStorage(
+    STORAGE_KEYS.SEARCH_QUERY,
+    "",
+  );
   const [appState, setAppState] = useState<IHomeState>({
     loading: true,
     repos: null,
@@ -24,7 +29,6 @@ const HomePage = () => {
   });
 
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [selectedCard, setSelectedCard] = useState<IData | null>(null);
 
   const getApi = useCallback(async (): Promise<void> => {
     setAppState((prevState) => ({
@@ -33,17 +37,11 @@ const HomePage = () => {
       repos: null,
       error: null,
     }));
-
     try {
-      const response = await getURL(searchQuery, page);
-
+      const response = await fetchArtworks(searchQuery, page);
       if (response && response.data) {
-        setAppState({
-          loading: false,
-          repos: response.data,
-          error: null,
-        });
-        setTotalPages(Math.ceil(response.total / PAGINATION.LIMIT));
+        setAppState({ loading: false, repos: response.data, error: null });
+        setTotalPages(Math.ceil(response.total / PAGINATION.CARDS_PER_PAGE));
       } else {
         throw new Error(ERROR_MESSAGES.INVALID_RESPONSE);
       }
@@ -62,59 +60,30 @@ const HomePage = () => {
     getApi();
   }, [getApi]);
 
-  useEffect(() => {
-    if (!details) {
-      setSelectedCard(null);
-    }
-  }, [details]);
-
   const handleSearch = (searchValue: string) => {
     if (searchValue === searchQuery || appState.loading) return;
     setSearchQuery(searchValue);
-    navigate({
+    void navigate({
       search: (prev) => ({ ...prev, page: 1 }),
     });
   };
 
   const handlePageChange = (newPage: number) => {
     if (appState.loading) return;
-    navigate({
+    void navigate({
       search: (prev) => ({ ...prev, page: newPage }),
     });
   };
 
   const handleCardClick = useCallback(
     (id: number) => {
-      const card = appState.repos?.find((p) => p.id === id);
-      if (card) {
-        setSelectedCard(card);
-      }
-      navigate({
-        search: (prev: Record<string, unknown>) => ({
-          ...prev,
-          details: id,
-        }),
+      void navigate({
+        to: "/catalog/$id",
+        params: { id: String(id) },
       });
     },
-    [appState.repos, navigate],
+    [navigate],
   );
-
-  const closeDetails = useCallback(() => {
-    setSelectedCard(null);
-    navigate({
-      search: (prev) => {
-        const newSearch = { ...prev };
-        delete newSearch.details;
-        return newSearch;
-      },
-    });
-  }, [navigate]);
-
-  const handleMainPanelClick = () => {
-    if (details) {
-      closeDetails();
-    }
-  };
 
   const shouldShowPagination = useMemo(
     () => !appState.loading && appState.repos && appState.repos.length > 0,
@@ -125,20 +94,15 @@ const HomePage = () => {
     <ErrorBoundary>
       <section className="home-page">
         <Search onSearch={handleSearch} />
-        <div className="cards-content" onClick={handleMainPanelClick}>
+        <div className="cards-content">
           <CardList
             loading={appState.loading}
             repos={appState.repos}
             error={appState.error}
             searchQuery={searchQuery}
             onCardClick={handleCardClick}
-            onRetry={getApi}
           />
-          <DetailsPage
-            isActive={!!details && !!selectedCard}
-            closeDetails={closeDetails}
-            card={selectedCard}
-          />
+          <Outlet />
         </div>
         {shouldShowPagination && (
           <Pagination
@@ -150,6 +114,6 @@ const HomePage = () => {
       </section>
     </ErrorBoundary>
   );
-};
+}
 
 export default HomePage;

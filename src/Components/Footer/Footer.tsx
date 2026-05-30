@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { LINKS } from "../../constants/api";
+import { LINKS } from "../../constants/links";
 import { TEXT } from "../../constants/text";
 import "./Footer.scss";
 

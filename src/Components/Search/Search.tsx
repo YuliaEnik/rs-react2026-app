@@ -6,7 +6,7 @@ import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 import "./Search.scss";
 
 const Search: React.FC<SearchProps> = ({ onSearch }) => {
-  const [value, setValue] = useLocalStorage(STORAGE_KEYS.ITEMS, "");
+  const [value, setValue] = useLocalStorage(STORAGE_KEYS.SEARCH_QUERY, "");
 
   const handleSearch = () => {
     const trimmedValue = value.trim();

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import Footer from "./Footer";
-import { LINKS } from "../../constants/api";
+import { LINKS } from "../../constants/links";
 
 describe("Footer", () => {
   it("renders without crashing", () => {

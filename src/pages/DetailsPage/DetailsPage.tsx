@@ -1,21 +1,22 @@
-import type { PropsWithChildren } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import Card from "../../Components/Card/Card";
-import type { IDetails } from "../../types/types";
-import { CSS_CLASSES } from "../../constants/cssClasses";
 import "./DetailsPage.scss";
+import { Route } from "../../routes/catalog/$id";
 
-const DetailsPage = ({
-  closeDetails,
-  card,
-  isActive,
-}: PropsWithChildren<IDetails>) => {
-  if (!isActive) return null;
+const DetailsPage = () => {
+  const navigate = useNavigate();
 
-  const className = `modal-page ${isActive ? CSS_CLASSES.ACTIVE : CSS_CLASSES.INACTIVE}`;
+  const card = Route.useLoaderData();
+
+  const closeDetails = () => {
+    navigate({ to: "/catalog" });
+  };
+
+  const className = "modal-page active";
 
   return (
-    <div className={className}>
-      {isActive && card && (
+    <div className={className} onClick={closeDetails}>
+      {card && (
         <div>
           <div
             className="modal-content"

@@ -1,3 +1,3 @@
 export const STORAGE_KEYS = {
-  ITEMS: "items",
+  SEARCH_QUERY: "SEARCH_QUERY",
 } as const;
