@@ -1,4 +1,4 @@
-import './Skeleton.scss';
+import "./Skeleton.scss";
 
 const SkeletonCard = () => (
   <li className="card-wrapper skeleton-card">
@@ -9,4 +9,4 @@ const SkeletonCard = () => (
   </li>
 );
 
-export { SkeletonCard };
+export default SkeletonCard;

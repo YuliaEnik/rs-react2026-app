@@ -1,31 +1,33 @@
 :root {
-  --color-bg-primary: #213547;
-  --color-bg-secondary: #c6926e;
+  --color-primary-dark: #213547;
+  --color-secondary-bg: #c6926e;
   --color-primary: #bdbdbd;
   --color-secondary: #929e9f;
-  --color-bg-light: #e1ccbd;
-  --color-bg-dark:#213547;
+  --color-secondary-light: #e1ccbd;
   --color-shadow: #4d4d4d;
   --color-button-active: #817f7f;
-  
+
+  --max-width-content: 80rem;
+
   --card-width: 15rem;
-  --card-height: 30rem;
+  --card-height: 27rem;
   --border-radius: 0.5rem;
   --spacing-sm: 0.5rem;
-  --spacing-lg: 2rem;
-  --spacing-xl: 3rem;
+  --spacing-m: 1rem;
+  --spacing-xl: 2rem;
   --spacing-xxl: 4rem;
-  
+
   --font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   --font-size-base: 0.8rem;
-  --font-size-h1: 3.2em;
+  --font-size-h1: 2.2em;
   --line-height-base: 1.5;
   --font-weight-base: 400;
   --font-weight-bold: 500;
-  
+
   --transition-slow: 0.8s;
   --transition-normal: 0.6s;
-  
+  --transition-fast: 0.4s;
+
   --box-shadow-hover: 0 0 0 0.05rem #7f827f;
 
   height: 100%;
@@ -41,7 +43,6 @@
   -webkit-text-size-adjust: 100%;
 }
 
-
 * {
   margin: 0;
   padding: 0;
@@ -56,9 +57,12 @@
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 20rem;
   min-height: 100vh;
-  background:  var(--color-bg-primary);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--color-primary-dark);
 }
 
 h1 {
@@ -74,13 +78,43 @@ button {
   font-weight: var(--font-weight-bold);
   font-family: inherit;
   cursor: pointer;
-  transition: transform var(--transition-slow), background-color var(--transition-slow);
-  
+  transition:
+    transform var(--transition-slow),
+    background-color var(--transition-slow);
+
   &:hover {
     transform: scale(1.1);
   }
-  
+
   &:active {
     background-color: var(--color-button-active);
   }
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  width: 100%;
+  background-color: var(--color-secondary-bg);
+  box-shadow: 0 0.1rem 0 var(--color-secondary-bg);
+  z-index: 1000;
+}
+
+.main {
+  min-height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-top: 3rem;
+}
+
+.footer {
+  width: 100%;
+  margin-top: auto;
 }

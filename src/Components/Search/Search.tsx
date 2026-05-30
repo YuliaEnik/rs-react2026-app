@@ -1,76 +1,47 @@
-import React from 'react';
-import './Search.scss';
+import React from "react";
+import type { SearchProps } from "../../types/types";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { TEXT } from "../../constants/text";
+import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
+import "./Search.scss";
 
-type IState = { value: string };
-type SearchProps = { onSearch: (value: string) => void };
+const Search: React.FC<SearchProps> = ({ onSearch }) => {
+  const [value, setValue] = useLocalStorage(STORAGE_KEYS.SEARCH_QUERY, "");
 
-class Search extends React.Component<SearchProps, IState> {
-  constructor(props: SearchProps) {
-    super(props);
-    this.state = {
-      value: '',
-    };
-  }
-
-  handleSearch = () => {
-    const trimmedValue = this.state.value.trim();
-
-    if (this.props.onSearch) {
-      this.props.onSearch(trimmedValue);
+  const handleSearch = () => {
+    const trimmedValue = value.trim();
+    if (onSearch) {
+      onSearch(trimmedValue);
     }
-  try {
-    if (trimmedValue) {
-      localStorage.setItem('items', trimmedValue);
-      } else {
-        localStorage.removeItem('items');
-      }
-      } catch (e) {
-      console.error("Could not save to localStorage", e);
-    }
-    };
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      this.setState({ value: event.target.value });
-    };
+    setValue(trimmedValue);
+  };
 
-  handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      this.handleSearch();
-    }
- };
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
 
-  componentDidMount(): void {
-    try {
-    const savedValue = localStorage.getItem('items');
-    if (savedValue) {
-      this.setState({ value: savedValue });
-      this.props.onSearch?.(savedValue);
-    } else {
-      this.props.onSearch?.('');
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearch();
     }
-    } catch {
-      this.props.onSearch?.('');
-    }
-  }
+  };
 
-  render() {
-    return (
-      <header className="header">
-        <div className="search">
-          <input
-            type="text"
-            name="text"
-            className="search-form_input"
-            placeholder="Search..."
-            value={this.state.value}
-            onChange={this.handleChange}
-            onKeyDown={this.handleKeyDown} 
-          />
-          <button onClick={this.handleSearch} className="search-button">
-          </button>
-        </div>
-      </header>
-    );
-  }
-}
+  return (
+    <span className="search-wrap">
+      <div className="search">
+        <input
+          type="text"
+          name="text"
+          className="search-form_input"
+          placeholder={TEXT.search.placeholder}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
+        <button onClick={handleSearch} className="search-button"></button>
+      </div>
+    </span>
+  );
+};
 
-export { Search };
+export default Search;

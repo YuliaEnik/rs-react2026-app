@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DetailsPage > Snapshot Tests > matches snapshot when active 1`] = `
+<div>
+  <div
+    class="modal-page active"
+  >
+    <div>
+      <div
+        class="modal-content"
+      >
+        <div
+          class="modal-header"
+        >
+          <div
+            class="btn-modal"
+          >
+            <p
+              class="btn-modal__img"
+            >
+              X
+            </p>
+          </div>
+        </div>
+        <div
+          data-id="1"
+          data-selected="true"
+          data-testid="mocked-card"
+        >
+          <h3>
+            Test Artwork 1
+          </h3>
+          <div
+            class="card-description"
+          >
+            Description visible
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DetailsPage > Snapshot Tests > matches snapshot when inactive 1`] = `<div />`;

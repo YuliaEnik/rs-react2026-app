@@ -1,0 +1,42 @@
+.footer {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--color-shadow);
+
+  &-content {
+    max-width: var(--max-width-content);
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-m);
+    gap: var(--spacing-m);
+  }
+
+  &-link {
+    color: var(--color-bg-secondary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    transition: color var(--transition-normal) ease;
+
+    &:hover {
+      color: var(--color-secondary-light);
+    }
+  }
+}
+
+.github-logo {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--color-secondary);
+  -webkit-mask-image: url(/github.svg);
+  mask-image: url(/github.svg);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  transition: background-color var(--transition-normal) ease-in-out;
+
+  &:hover {
+    background-color: var(--color-secondary-light);
+  }
+}

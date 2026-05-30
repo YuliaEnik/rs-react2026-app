@@ -1,51 +1,101 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { HomePage } from './HomePage';
-import { http, HttpResponse } from 'msw';
-import { server } from '../../__tests__/mocks/server';
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { http, HttpResponse } from "msw";
+import { server } from "../../__tests__/mocks/server";
+import type { IData } from "../../types/types";
+import HomePage from "./HomePage";
 
+const mockNavigate = vi.fn();
+const currentSearchParams = { page: 1 };
 
-describe('HomePage Component', () => {
+vi.mock("../../routes/catalog/route", () => ({
+  Route: {
+    useSearch: () => currentSearchParams,
+  },
+}));
+
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: vi.fn(() => mockNavigate),
+  Outlet: () => <div data-testid="mock-outlet" />,
+}));
+
+vi.mock("../../hooks/useLocalStorage", () => ({
+  useLocalStorage: () => ["", vi.fn()],
+}));
+
+vi.mock("../../Components/CardList/CardList", () => ({
+  default: ({
+    loading,
+    repos,
+    error,
+    onCardClick,
+  }: {
+    loading: boolean;
+    repos: IData[] | null;
+    error: string | null;
+    searchQuery: string;
+    onCardClick: (id: number) => void;
+    onRetry: () => Promise<void>;
+  }) => {
+    if (loading) return <div data-testid="skeleton-card">Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+
+    return (
+      <ul>
+        {repos?.map((card) => (
+          <li key={card.id} onClick={() => onCardClick(card.id)}>
+            {card.title}
+          </li>
+        ))}
+      </ul>
+    );
+  },
+}));
+
+vi.mock("../../Components/Search/Search", () => ({ default: () => null }));
+vi.mock("../../Components/Pagination/Pagination", () => ({
+  default: () => null,
+}));
+
+describe("HomePage Component", () => {
   beforeEach(() => {
-    localStorage.clear();
+    vi.clearAllMocks();
+    currentSearchParams.page = 1;
   });
 
-  it('show skeletons and caeds after rende', async () => {
+  it("renders loader and then displays cards from API", async () => {
     render(<HomePage />);
 
-    const skeletons = document.querySelectorAll('.skeleton-card'); 
-    expect(skeletons.length).toBeGreaterThan(0);
+    expect(screen.getByTestId("skeleton-card")).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText('Test Artwork 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Artwork 2')).toBeInTheDocument();
-    }, { timeout: 3000 });
-
-  });
-
-  it('notice "Sorry, nothing found", if cardList clear', async () => {
-    localStorage.setItem('items', 'UnknownArt');
-    
-    render(<HomePage />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Sorry, nothing found for "UnknownArt"/i)).toBeInTheDocument();
-
-      const cards = screen.queryAllByRole('card'); 
-      expect(cards.length).toBe(0);
+      expect(screen.getByText("Test Artwork 1")).toBeInTheDocument();
     });
   });
 
-  it('show message if API broke', async () => {
-  server.use(
-    http.get('*/api/artworks', () => {
-      return new HttpResponse(null, { status: 500 });
-    })
-  );
-  
-  render(<HomePage />);
-  await waitFor(() => {
-    expect(screen.getByText(/error/i)).toBeInTheDocument();
+  it("displays error message when API fails", async () => {
+    server.use(
+      http.get("*/api/artworks", () => {
+        return new HttpResponse(null, { status: 500 });
+      }),
+    );
+
+    render(<HomePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Error:/i)).toBeInTheDocument();
+    });
   });
-});
+
+  it("navigates to details page when a card is clicked", async () => {
+    render(<HomePage />);
+
+    const card = await screen.findByText("Test Artwork 1");
+    fireEvent.click(card);
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      to: "/catalog/$id",
+      params: { id: "1" },
+    });
+  });
 });

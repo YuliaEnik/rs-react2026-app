@@ -1,33 +1,62 @@
-import React from 'react';
-import type { CardState, IData } from '../../Data/data';
-import './Card.scss';
+import React, { useState } from "react";
+import type { CardState, IData } from "../../types/types";
+import "./Card.scss";
+import { TEXT } from "../../constants/text";
 
-class Card extends React.Component<IData, CardState> {
-  constructor(props: IData) {
-    super(props);
-    this.state = {
-      imgError: false
-    };
-  }
+const Card: React.FC<IData> = ({
+  id,
+  title,
+  creators,
+  creation_date,
+  images,
+  description,
+  onClick,
+  isSelected,
+}) => {
+  const [imgError, setImgError] = useState<CardState["imgError"]>(false);
 
-  render() {
-    return (
-      <li className="card-wrapper" data-testid="card">
-        {this.props.images?.web?.url && !this.state.imgError ? (
+  const handleClick = () => {
+    if (onClick) {
+      onClick(id);
+    }
+  };
+
+  return (
+    <li className="card-wrapper" data-testid="card" onClick={handleClick}>
+      <div className="card-image-box">
+        {images?.web?.url && !imgError ? (
           <img
-            src={this.props.images.web.url}
-            alt={this.props.title}
-            onError={() => this.setState({ imgError: true })}
+            src={images.web.url}
+            alt={title}
+            onError={() => setImgError(true)}
+            loading="lazy"
           />
         ) : (
-          <div className="image-placeholder">Image not available</div>
+          <div className="image-placeholder">{TEXT.card.imageNotAvailable}</div>
         )}
-        <h3>Author: <i className="card-value">{this.props.creators?.[0]?.description || 'Unknown'}</i></h3>
-        <h3>Name: <i className="card-value">{this.props.title}</i></h3>
-        <h3>Year: <i className="card-value">{this.props.creation_date || 'Unknown'}</i></h3>
-      </li>
-    );
-  }
-}
+      </div>
+      <h3>
+        {TEXT.card.author}
+        <i className="card-value">
+          {creators?.[0]?.description || TEXT.card.unknown}
+        </i>
+      </h3>
+      <h3>
+        {TEXT.card.name}
+        <i className="card-value">{title}</i>
+      </h3>
+      <h3>
+        {TEXT.card.year}
+        <i className="card-value">{creation_date || TEXT.card.unknown}</i>
+      </h3>
+      {isSelected && description && (
+        <div className="card-description">
+          <h3>{TEXT.card.description || TEXT.card.unknown}</h3>
+          <p>{description}</p>
+        </div>
+      )}
+    </li>
+  );
+};
 
-export { Card };
+export default Card;
