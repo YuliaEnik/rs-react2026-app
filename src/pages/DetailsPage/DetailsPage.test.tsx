@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import DetailsPage from "./DetailsPage";
+import { Route } from "../../routes/catalog/$id";
 
 vi.mock("../../Components/Card/Card", () => ({
   default: vi.fn(({ title, isSelected }) => (
@@ -8,6 +9,18 @@ vi.mock("../../Components/Card/Card", () => ({
       <h3>{title}</h3>
     </div>
   )),
+}));
+
+const mockNavigate = vi.fn();
+
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: () => mockNavigate,
+}));
+
+vi.mock("../../routes/catalog/$id", () => ({
+  Route: {
+    useLoaderData: vi.fn(),
+  },
 }));
 
 describe("DetailsPage", () => {
@@ -19,44 +32,22 @@ describe("DetailsPage", () => {
     description: "Test description",
   };
 
-  const mockCloseDetails = vi.fn();
-
   beforeEach(() => {
-    mockCloseDetails.mockClear();
-  });
-
-  it("renders nothing when isActive is false", () => {
-    render(
-      <DetailsPage
-        isActive={false}
-        closeDetails={mockCloseDetails}
-        card={mockCard}
-      />,
-    );
-
-    expect(screen.queryByTestId("mocked-card")).not.toBeInTheDocument();
+    vi.clearAllMocks();
   });
 
   it("renders nothing when card is null", () => {
-    render(
-      <DetailsPage
-        isActive={true}
-        closeDetails={mockCloseDetails}
-        card={null}
-      />,
-    );
+    vi.mocked(Route.useLoaderData).mockReturnValue(null);
+
+    render(<DetailsPage />);
 
     expect(screen.queryByTestId("mocked-card")).not.toBeInTheDocument();
   });
 
-  it("renders card when isActive is true and card exists", () => {
-    render(
-      <DetailsPage
-        isActive={true}
-        closeDetails={mockCloseDetails}
-        card={mockCard}
-      />,
-    );
+  it("renders card when data exists", () => {
+    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
+
+    render(<DetailsPage />);
 
     expect(screen.getByTestId("mocked-card")).toBeInTheDocument();
     expect(screen.getByText("Test Artwork 1")).toBeInTheDocument();
@@ -64,47 +55,48 @@ describe("DetailsPage", () => {
   });
 
   it("passes isSelected={true} to Card component", () => {
-    render(
-      <DetailsPage
-        isActive={true}
-        closeDetails={mockCloseDetails}
-        card={mockCard}
-      />,
-    );
+    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
+
+    render(<DetailsPage />);
 
     const mockedCard = screen.getByTestId("mocked-card");
     expect(mockedCard).toHaveAttribute("data-selected", "true");
   });
 
-  it("calls closeDetails when clicking close button", () => {
-    render(
-      <DetailsPage
-        isActive={true}
-        closeDetails={mockCloseDetails}
-        card={mockCard}
-      />,
-    );
+  it("calls navigate to /catalog when clicking close button", () => {
+    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
+
+    render(<DetailsPage />);
 
     const closeButton = screen.getByText("X");
     fireEvent.click(closeButton);
 
-    expect(mockCloseDetails).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith({ to: "/catalog" });
   });
 
-  it("does not call closeDetails when clicking on modal-content", () => {
-    render(
-      <DetailsPage
-        isActive={true}
-        closeDetails={mockCloseDetails}
-        card={mockCard}
-      />,
-    );
+  it("calls navigate to /catalog when clicking backdrop (outer overlay)", () => {
+    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
 
-    const modalContent = document.querySelector(".modal-content");
+    const { container } = render(<DetailsPage />);
+
+    const backdrop = container.firstChild;
+    if (backdrop) {
+      fireEvent.click(backdrop);
+    }
+
+    expect(mockNavigate).toHaveBeenCalledWith({ to: "/catalog" });
+  });
+
+  it("does not call navigate when clicking on modal-content due to stopPropagation", () => {
+    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
+
+    const { container } = render(<DetailsPage />);
+
+    const modalContent = container.querySelector(".modal-content");
     if (modalContent) {
       fireEvent.click(modalContent);
     }
 
-    expect(mockCloseDetails).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

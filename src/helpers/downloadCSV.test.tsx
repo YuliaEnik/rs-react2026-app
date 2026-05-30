@@ -17,7 +17,9 @@ describe("downloadCSV helper", () => {
       click: vi.fn(),
     };
 
-    vi.spyOn(document, "createElement").mockReturnValue(mockLink as HTMLAnchorElement);
+    vi.spyOn(document, "createElement").mockReturnValue(
+      mockLink as HTMLAnchorElement,
+    );
 
     vi.spyOn(document.body, "appendChild").mockImplementation((node) => node);
     vi.spyOn(document.body, "removeChild").mockImplementation((node) => node);

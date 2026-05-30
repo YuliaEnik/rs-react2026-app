@@ -1,4 +1,3 @@
 export const PAGINATION = {
-  LIMIT: 12,
-  SKELETON_COUNT: 12,
-} as const;
+  CARDS_PER_PAGE: 12,
+};

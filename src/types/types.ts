@@ -32,7 +32,6 @@ export interface CardListProps {
   error: string | null;
   searchQuery: string;
   onCardClick: (id: number) => void;
-  onRetry: () => void;
 }
 
 export interface ICheckbox {

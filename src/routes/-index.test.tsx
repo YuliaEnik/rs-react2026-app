@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import {
   createMemoryHistory,
   createRouter,
@@ -18,23 +18,29 @@ function renderRouterWithUrl(initialUrl: string) {
     history: testHistory,
   });
 
-  return render(
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>,
-  );
+  return {
+    router,
+    ...render(
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>,
+    ),
+  };
 }
 
-describe("Home Route Search Params Validation", () => {
-  it("should render HomePage when valid search parameters are provided", async () => {
-    renderRouterWithUrl("/?page=2");
+describe("Routing & Search Params Validation", () => {
+  it("should redirect from '/' to '/catalog?page=1'", async () => {
+    const { router } = renderRouterWithUrl("/");
 
-    const homePageElement = await screen.findByText(/home/i);
-    expect(homePageElement).toBeInTheDocument();
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe("/catalog");
+      expect(router.state.location.search).toEqual({ page: 1 });
+    });
   });
 
-  it("should render NotFoundPage when invalid search parameters trigger errorComponent", async () => {
-    renderRouterWithUrl("/?page=1рррррр");
+  it("should render NotFoundPage or Error когда параметры страницы невалидны", async () => {
+    renderRouterWithUrl("/catalog?page=1рррррр");
+
     const errorHeading = await screen.findByRole("heading", {
       level: 1,
       name: "404",

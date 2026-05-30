@@ -5,22 +5,24 @@ import { useAppTheme } from "../../themeContext/ThemeContext";
 
 function Navigation() {
   const { theme, toggleTheme } = useAppTheme();
+  const { navigation } = TEXT;
+
   return (
     <nav className="nav">
       <div className="nav-pages">
         <Link
-          to="/"
+          to="/catalog"
           className="nav-link"
           activeProps={{ className: "nav-link_active" }}
         >
-          {TEXT.navigation.home}
+          {navigation.home}
         </Link>
         <Link
           to="/about"
           className="nav-link"
           activeProps={{ className: "nav-link_active" }}
         >
-          {TEXT.navigation.about}
+          {navigation.about}
         </Link>
       </div>
       <button onClick={toggleTheme} className="theme-toggle-btn" type="button">

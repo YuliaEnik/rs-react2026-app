@@ -1,6 +1,6 @@
 import type { JSX } from "react";
-import "./AboutUs.scss";
 import { TEXT } from "../../constants/text";
+import "./AboutUs.scss";
 
 const AboutUs = (): JSX.Element => {
   const { about } = TEXT.pages;
@@ -18,7 +18,7 @@ const AboutUs = (): JSX.Element => {
         <section className="about-section">
           <h2>{about.appHeading}</h2>
           <p>
-            {about.appTextPreLink}
+            {about.appTextPreLink}{" "}
             <a
               href="https://rs.school/courses/reactjs"
               target="_blank"

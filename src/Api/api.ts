@@ -2,13 +2,13 @@ import { PAGINATION } from "../constants/numbers";
 import { ERROR_MESSAGES } from "../constants/text";
 import type { IData } from "../types/types";
 
-const getURL = async (
+const fetchArtworks = async (
   search?: string,
   page: number = 1,
 ): Promise<{ data: IData[]; hasMore: boolean; total: number }> => {
   try {
     const query = search?.trim() || "";
-    const limit = PAGINATION.LIMIT;
+    const limit = PAGINATION.CARDS_PER_PAGE;
     const skip = (page - 1) * limit;
     const fieldsParam = "id,title,creators,images,creation_date,description";
 
@@ -38,7 +38,7 @@ const getURL = async (
     const results = data.data || [];
 
     return {
-      data: results as IData[],
+      data: results,
       hasMore: results.length === limit,
       total: data.info?.total || data.total || results.length,
     };
@@ -48,4 +48,4 @@ const getURL = async (
   }
 };
 
-export default getURL;
+export default fetchArtworks;

@@ -12,7 +12,6 @@ const CardList: React.FC<CardListProps> = ({
   error,
   searchQuery,
   onCardClick,
-  onRetry,
 }) => {
   const shouldShowSkeletons = loading && !repos;
   const hasNoResults = repos?.length === 0 && !loading && searchQuery !== "";
@@ -21,7 +20,7 @@ const CardList: React.FC<CardListProps> = ({
   return (
     <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()}>
       {shouldShowSkeletons &&
-        Array.from({ length: PAGINATION.SKELETON_COUNT }, (_, i) => (
+        Array.from({ length: PAGINATION.CARDS_PER_PAGE }, (_, i) => (
           <SkeletonCard key={i} />
         ))}
 
@@ -36,7 +35,6 @@ const CardList: React.FC<CardListProps> = ({
       {showError && (
         <div className="error-message">
           <p>{error}</p>
-          <button onClick={onRetry}>{TEXT.catalog.tryAgainBtn}</button>
         </div>
       )}
 

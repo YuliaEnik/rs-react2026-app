@@ -1,62 +1,89 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+  createRootRoute,
+  createRoute,
+} from "@tanstack/react-router";
+import { describe, expect, it, vi } from "vitest";
+import { TEXT } from "../../constants/text";
+import { type ThemeKey, ThemeContext } from "../../themeContext/ThemeContext";
 import Navigation from "./Navigate";
-import React from "react";
-import { ThemeProvider } from "../../themeContext/ThemeProvider";
 
-vi.mock("@tanstack/react-router", () => ({
-  Link: ({
-    to,
-    children,
-    className,
-  }: {
-    to: string;
-    children: React.ReactNode;
-    className?: string;
-  }) => (
-    <a href={to} className={className}>
-      {children}
-    </a>
-  ),
-}));
+const rootRoute = createRootRoute({
+  component: () => <Navigation />,
+});
 
-describe("Navigation", () => {
-  it("renders navigation", () => {
-    render(
-      <ThemeProvider>
-        <Navigation />
-      </ThemeProvider>,
-    );
-    expect(document.querySelector(".nav")).toBeInTheDocument();
+const catalogRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/catalog",
+});
+const aboutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/about",
+});
+const routeTree = rootRoute.addChildren([catalogRoute, aboutRoute]);
+
+async function renderNavigation(
+  themeValue: ThemeKey = "light",
+  toggleThemeMock = vi.fn(),
+) {
+  const testHistory = createMemoryHistory({ initialEntries: ["/catalog"] });
+  const router = createRouter({ routeTree, history: testHistory });
+  await router.load();
+
+  return render(
+    <ThemeContext.Provider
+      value={{ theme: themeValue, toggleTheme: toggleThemeMock }}
+    >
+      <RouterProvider router={router} defaultComponent={Navigation} />
+    </ThemeContext.Provider>,
+  );
+}
+
+describe("Navigation Component", () => {
+  it("should render navigation links with correct text", async () => {
+    await renderNavigation();
+
+    const homeLink = screen.getByText(TEXT.navigation.home);
+    const aboutLink = screen.getByText(TEXT.navigation.about);
+
+    expect(homeLink).toBeInTheDocument();
+    expect(aboutLink).toBeInTheDocument();
   });
 
-  it("has Home link pointing to /", () => {
-    render(
-      <ThemeProvider>
-        <Navigation />
-      </ThemeProvider>,
-    );
-    const link = screen.getByText("Home");
-    expect(link).toHaveAttribute("href", "/");
+  it("should have correct href attributes for routing", async () => {
+    await renderNavigation();
+
+    const homeLink = screen.getByText(TEXT.navigation.home).closest("a");
+    const aboutLink = screen.getByText(TEXT.navigation.about).closest("a");
+
+    expect(homeLink).toHaveAttribute("href", "/catalog");
+    expect(aboutLink).toHaveAttribute("href", "/about");
   });
 
-  it("has About Us link pointing to /about", () => {
-    render(
-      <ThemeProvider>
-        <Navigation />
-      </ThemeProvider>,
-    );
-    const link = screen.getByText("About us");
-    expect(link).toHaveAttribute("href", "/about");
+  it("should display dark theme button text when current theme is light", async () => {
+    await renderNavigation("light");
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveTextContent(TEXT.theme.dark);
   });
 
-  it("has both navigation links", () => {
-    render(
-      <ThemeProvider>
-        <Navigation />
-      </ThemeProvider>,
-    );
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("About us")).toBeInTheDocument();
+  it("should display light theme button text when current theme is dark", async () => {
+    await renderNavigation("dark");
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveTextContent(TEXT.theme.light);
+  });
+
+  it("should call toggleTheme function when theme button is clicked", async () => {
+    const toggleThemeMock = vi.fn();
+    await renderNavigation("light", toggleThemeMock);
+
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
+
+    expect(toggleThemeMock).toHaveBeenCalledTimes(1);
   });
 });
