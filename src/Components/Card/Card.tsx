@@ -1,33 +1,35 @@
 import React, { useState } from "react";
 import type { CardState, IData } from "../../types/types";
-import "./Card.scss";
 import { TEXT } from "../../constants/text";
+import { useStore } from "../../store/useStore";
+import { Checkbox } from "../CheckBox/CheckBox";
+import "./Card.scss";
 
-const Card: React.FC<IData> = ({
-  id,
-  title,
-  creators,
-  creation_date,
-  images,
-  description,
-  onClick,
-  isSelected,
-}) => {
+const Card: React.FC<IData> = (props: IData) => {
   const [imgError, setImgError] = useState<CardState["imgError"]>(false);
 
+  const selectedCards = useStore((state) => state.selectedCards);
+  const toggleCard = useStore((state) => state.toggleCard);
+
+  const isChecked = selectedCards.some((item) => item.id === props.id);
+
   const handleClick = () => {
-    if (onClick) {
-      onClick(id);
+    if (props.onClick) {
+      props.onClick(props.id);
     }
+  };
+
+  const handleCheckboxChange = () => {
+    toggleCard(props);
   };
 
   return (
     <li className="card-wrapper" data-testid="card" onClick={handleClick}>
       <div className="card-image-box">
-        {images?.web?.url && !imgError ? (
+        {props.images?.web?.url && !imgError ? (
           <img
-            src={images.web.url}
-            alt={title}
+            src={props.images.web.url}
+            alt={props.title}
             onError={() => setImgError(true)}
             loading="lazy"
           />
@@ -38,21 +40,33 @@ const Card: React.FC<IData> = ({
       <h3>
         {TEXT.card.author}
         <i className="card-value">
-          {creators?.[0]?.description || TEXT.card.unknown}
+          {props.creators?.[0]?.description || TEXT.card.unknown}
         </i>
       </h3>
       <h3>
         {TEXT.card.name}
-        <i className="card-value">{title}</i>
+        <i className="card-value">{props.title}</i>
       </h3>
       <h3>
         {TEXT.card.year}
-        <i className="card-value">{creation_date || TEXT.card.unknown}</i>
+        <i className="card-value">{props.creation_date || TEXT.card.unknown}</i>
       </h3>
-      {isSelected && description && (
+      {props.isSelected && props.description && (
         <div className="card-description">
           <h3>{TEXT.card.description || TEXT.card.unknown}</h3>
-          <p>{description}</p>
+          <p>{props.description}</p>
+        </div>
+      )}
+      {!props.isSelected && (
+        <div
+          className="card-checkbox-container"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Checkbox
+            id={props.id}
+            checked={isChecked}
+            onChange={handleCheckboxChange}
+          />
         </div>
       )}
     </li>

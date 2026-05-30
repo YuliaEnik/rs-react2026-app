@@ -33,3 +33,9 @@ export interface CardListProps {
   searchQuery: string;
   onCardClick: (id: number) => void;
 }
+
+export interface ICheckbox {
+  id: number;
+  checked?: boolean;
+  onChange?: () => void;
+}

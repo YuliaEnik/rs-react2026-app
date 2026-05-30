@@ -15,8 +15,8 @@ export const Route = createFileRoute("/catalog/$id")({
     return (json.data || json) as IData;
   },
   pendingComponent: () => (
-    <div className="active" style={{ margin: 0, width: 100 }}>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0, width: 100 }}>
+    <div className="modal-page active">
+      <ul style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}>
         <SkeletonCard />
       </ul>
     </div>

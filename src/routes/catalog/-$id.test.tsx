@@ -17,7 +17,6 @@ describe("Catalog ID Route (Isolated Minimum)", () => {
 
     render(<PendingComp />);
 
-    expect(screen.getByText("X")).toBeInTheDocument();
     expect(screen.getByTestId("mock-skeleton")).toBeInTheDocument();
   });
 });

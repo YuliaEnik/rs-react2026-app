@@ -3,9 +3,15 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--spacing-m);
+  gap: var(--spacing-xxl);
   max-width: var(--max-width-content);
+  width: 100%;
   margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+  &-pages {
+    display: flex;
+    gap: var(--spacing-xl);
+  }
 }
 
 .nav-link {
@@ -23,4 +29,10 @@
 .nav-link_active {
   color: var(--color-primary-dark);
   font-weight: var(--font-weight-bold);
+}
+
+.theme-toggle-btn {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
 }

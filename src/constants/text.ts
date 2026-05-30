@@ -14,6 +14,10 @@ export const TEXT = {
     home: "Home",
     about: "About us",
   },
+  theme: {
+    light: "Light",
+    dark: "Dark",
+  },
   footer: {
     year: "2026",
     schoolName: "RS School",
@@ -30,6 +34,11 @@ export const TEXT = {
     year: "Year:",
     description: "Description:",
     unknown: "Unknown",
+  },
+  selectionFlyout: {
+    count: "Selected cards:",
+    buttonUnselect: "Unselect",
+    buttonDownLoad: "DownLoad",
   },
   pages: {
     about: {
@@ -64,4 +73,4 @@ export const ERROR_MESSAGES = {
   API_SERVER_ERROR:
     "Server error. Our team has been notified. Please try again later.",
   API_FAILED: "Request failed with status:",
-} as const;
+};

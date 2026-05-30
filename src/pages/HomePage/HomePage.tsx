@@ -10,6 +10,7 @@ import Search from "../../Components/Search/Search";
 import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 import { PAGINATION } from "../../constants/numbers";
 import { ERROR_MESSAGES } from "../../constants/text";
+import { SelectionFlyout } from "../../Components/SelectionFlyout/SelectionFlyout";
 import type { IHomeState } from "../../types/types";
 import "./HomePage.scss";
 
@@ -112,6 +113,7 @@ function HomePage(): JSX.Element {
           />
         )}
       </section>
+      <SelectionFlyout />
     </ErrorBoundary>
   );
 }

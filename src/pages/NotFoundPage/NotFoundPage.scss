@@ -36,7 +36,7 @@
   .home-link {
     display: inline-block;
     padding: var(--spacing-m) var(--spacing-xl);
-    background: var(--color-secondary-bg);
+    background: var(--bg-secondary-dark);
     color: white;
     text-decoration: none;
     border-radius: var(--border-radius);
@@ -44,7 +44,6 @@
 
     &:hover {
       transform: translateY(-2px);
-      background: var(--color-primary-dark);
     }
   }
 }

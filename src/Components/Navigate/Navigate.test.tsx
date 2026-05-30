@@ -1,49 +1,89 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import Navigation from "./Navigate";
+import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+  createRootRoute,
+  createRoute,
+} from "@tanstack/react-router";
+import { describe, expect, it, vi } from "vitest";
 import { TEXT } from "../../constants/text";
+import { type ThemeKey, ThemeContext } from "../../themeContext/ThemeContext";
+import Navigation from "./Navigate";
 
-const { navigation } = TEXT;
+const rootRoute = createRootRoute({
+  component: () => <Navigation />,
+});
 
-vi.mock("@tanstack/react-router", () => ({
-  Link: ({
-    to,
-    children,
-    className,
-  }: {
-    to: string;
-    children: React.ReactNode;
-    className?: string;
-    activeProps?: { className?: string };
-  }) => (
-    <a href={to} className={className}>
-      {children}
-    </a>
-  ),
-}));
+const catalogRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/catalog",
+});
+const aboutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/about",
+});
+const routeTree = rootRoute.addChildren([catalogRoute, aboutRoute]);
 
-describe("Navigation", () => {
-  it("renders navigation container", () => {
-    const { container } = render(<Navigation />);
-    expect(container.querySelector(".nav")).toBeInTheDocument();
+async function renderNavigation(
+  themeValue: ThemeKey = "light",
+  toggleThemeMock = vi.fn(),
+) {
+  const testHistory = createMemoryHistory({ initialEntries: ["/catalog"] });
+  const router = createRouter({ routeTree, history: testHistory });
+  await router.load();
+
+  return render(
+    <ThemeContext.Provider
+      value={{ theme: themeValue, toggleTheme: toggleThemeMock }}
+    >
+      <RouterProvider router={router} defaultComponent={Navigation} />
+    </ThemeContext.Provider>,
+  );
+}
+
+describe("Navigation Component", () => {
+  it("should render navigation links with correct text", async () => {
+    await renderNavigation();
+
+    const homeLink = screen.getByText(TEXT.navigation.home);
+    const aboutLink = screen.getByText(TEXT.navigation.about);
+
+    expect(homeLink).toBeInTheDocument();
+    expect(aboutLink).toBeInTheDocument();
   });
 
-  it("has Catalog link pointing to /catalog", () => {
-    render(<Navigation />);
-    const link = screen.getByText(navigation.home);
-    expect(link).toHaveAttribute("href", "/catalog");
+  it("should have correct href attributes for routing", async () => {
+    await renderNavigation();
+
+    const homeLink = screen.getByText(TEXT.navigation.home).closest("a");
+    const aboutLink = screen.getByText(TEXT.navigation.about).closest("a");
+
+    expect(homeLink).toHaveAttribute("href", "/catalog");
+    expect(aboutLink).toHaveAttribute("href", "/about");
   });
 
-  it("has About Us link pointing to /about", () => {
-    render(<Navigation />);
-    const link = screen.getByText(navigation.about);
-    expect(link).toHaveAttribute("href", "/about");
+  it("should display dark theme button text when current theme is light", async () => {
+    await renderNavigation("light");
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveTextContent(TEXT.theme.dark);
   });
 
-  it("renders both navigation links inside the document", () => {
-    render(<Navigation />);
-    expect(screen.getByText(navigation.home)).toBeInTheDocument();
-    expect(screen.getByText(navigation.about)).toBeInTheDocument();
+  it("should display light theme button text when current theme is dark", async () => {
+    await renderNavigation("dark");
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveTextContent(TEXT.theme.light);
+  });
+
+  it("should call toggleTheme function when theme button is clicked", async () => {
+    const toggleThemeMock = vi.fn();
+    await renderNavigation("light", toggleThemeMock);
+
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
+
+    expect(toggleThemeMock).toHaveBeenCalledTimes(1);
   });
 });
