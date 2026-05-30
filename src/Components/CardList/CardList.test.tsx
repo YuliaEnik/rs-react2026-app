@@ -41,7 +41,6 @@ describe("CardList Component", () => {
         error={null}
         searchQuery=""
         onCardClick={mockOnCardClick}
-        onRetry={vi.fn()}
       />,
     );
     const card = screen.getByText("Artwork 1");

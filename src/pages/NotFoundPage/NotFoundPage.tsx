@@ -10,7 +10,7 @@ const NotFoundPage = () => {
         <h1>{notFound.heading}</h1>
         <h2>{notFound.subheading}</h2>
         <p>{notFound.message}</p>
-        <Link to="/$" className="home-link">
+        <Link to="/catalog" className="home-link">
           {notFound.backLink}
         </Link>
       </div>
