@@ -21,10 +21,7 @@ function HomePage(): JSX.Element {
     STORAGE_KEYS.SEARCH_QUERY,
     "",
   );
-  const { data, error, isLoading } = useGetArtworks(
-    searchQuery,
-    page,
-  );
+  const { data, error, isLoading } = useGetArtworks(searchQuery, page);
 
   const totalPages = useMemo(() => {
     if (!data?.total) return 1;

@@ -1,6 +1,7 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { http, HttpResponse } from "msw";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { server } from "../../__tests__/mocks/server";
 import type { IData } from "../../types/types";
 import HomePage from "./HomePage";
@@ -58,13 +59,30 @@ vi.mock("../../Components/Pagination/Pagination", () => ({
 }));
 
 describe("HomePage Component", () => {
+  let testQueryClient: QueryClient;
+
   beforeEach(() => {
     vi.clearAllMocks();
     currentSearchParams.page = 1;
+
+    testQueryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          gcTime: 0,
+        },
+      },
+    });
   });
 
+  const renderWithQuery = (ui: React.ReactElement) => {
+    return render(
+      <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>,
+    );
+  };
+
   it("renders loader and then displays cards from API", async () => {
-    render(<HomePage />);
+    renderWithQuery(<HomePage />);
 
     expect(screen.getByTestId("skeleton-card")).toBeInTheDocument();
 
@@ -80,7 +98,7 @@ describe("HomePage Component", () => {
       }),
     );
 
-    render(<HomePage />);
+    renderWithQuery(<HomePage />);
 
     await waitFor(() => {
       expect(screen.getByText(/Error:/i)).toBeInTheDocument();
@@ -88,7 +106,7 @@ describe("HomePage Component", () => {
   });
 
   it("navigates to details page when a card is clicked", async () => {
-    render(<HomePage />);
+    renderWithQuery(<HomePage />);
 
     const card = await screen.findByText("Test Artwork 1");
     fireEvent.click(card);

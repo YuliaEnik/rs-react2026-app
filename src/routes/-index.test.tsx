@@ -7,6 +7,11 @@ import {
 import { describe, expect, it } from "vitest";
 import { routeTree } from "../routeTree.gen";
 import { ThemeProvider } from "../themeContext/ThemeProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const testQueryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
 
 function renderRouterWithUrl(initialUrl: string) {
   const testHistory = createMemoryHistory({
@@ -16,13 +21,18 @@ function renderRouterWithUrl(initialUrl: string) {
   const router = createRouter({
     routeTree,
     history: testHistory,
+    context: {
+      queryClient: testQueryClient,
+    },
   });
 
   return {
     router,
     ...render(
       <ThemeProvider>
-        <RouterProvider router={router} />
+        <QueryClientProvider client={testQueryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       </ThemeProvider>,
     ),
   };
