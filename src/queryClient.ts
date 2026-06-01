@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 
-const CACHE_TTL = Number(import.meta.env.REACT_APP_CACHE_TTL_MS) || 30000;
+const CACHE_TTL = Number(import.meta.env.REACT_APP_CACHE_TTL_MS) || 60000;
 
 export const queryClient = new QueryClient({
   defaultOptions: {

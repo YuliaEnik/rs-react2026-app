@@ -9,8 +9,8 @@ import Search from "../../Components/Search/Search";
 import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 import { PAGINATION } from "../../constants/numbers";
 import { SelectionFlyout } from "../../Components/SelectionFlyout/SelectionFlyout";
-import "./HomePage.scss";
 import { useGetArtworks } from "../../hooks/useArtworksQueries";
+import "./HomePage.scss";
 
 function HomePage(): JSX.Element {
   const navigate = useNavigate({ from: "/catalog" });
@@ -21,14 +21,10 @@ function HomePage(): JSX.Element {
     STORAGE_KEYS.SEARCH_QUERY,
     "",
   );
-  const { data, error, isLoading /* isFetching */ } = useGetArtworks(
+  const { data, error, isLoading } = useGetArtworks(
     searchQuery,
     page,
   );
-
-  /*  const handleRefresh = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["artworks"] });
-  }; */
 
   const totalPages = useMemo(() => {
     if (!data?.total) return 1;

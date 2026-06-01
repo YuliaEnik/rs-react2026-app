@@ -18,6 +18,10 @@ export const TEXT = {
     light: "Light",
     dark: "Dark",
   },
+  refresh: {
+    refresh: "Refresh",
+    updating: "Updating",
+  },
   footer: {
     year: "2026",
     schoolName: "RS School",
