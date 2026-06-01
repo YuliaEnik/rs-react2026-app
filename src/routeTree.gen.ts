@@ -8,116 +8,116 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as CatalogRouteRouteImport } from './routes/catalog/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as CatalogIdRouteImport } from './routes/catalog/$id'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as AboutRouteImport } from "./routes/about";
+import { Route as CatalogRouteRouteImport } from "./routes/catalog/route";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as CatalogIdRouteImport } from "./routes/catalog/$id";
 
 const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+  id: "/about",
+  path: "/about",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const CatalogRouteRoute = CatalogRouteRouteImport.update({
-  id: '/catalog',
-  path: '/catalog',
+  id: "/catalog",
+  path: "/catalog",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const CatalogIdRoute = CatalogIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
+  id: "/$id",
+  path: "/$id",
   getParentRoute: () => CatalogRouteRoute,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/catalog': typeof CatalogRouteRouteWithChildren
-  '/about': typeof AboutRoute
-  '/catalog/$id': typeof CatalogIdRoute
+  "/": typeof IndexRoute;
+  "/catalog": typeof CatalogRouteRouteWithChildren;
+  "/about": typeof AboutRoute;
+  "/catalog/$id": typeof CatalogIdRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/catalog': typeof CatalogRouteRouteWithChildren
-  '/about': typeof AboutRoute
-  '/catalog/$id': typeof CatalogIdRoute
+  "/": typeof IndexRoute;
+  "/catalog": typeof CatalogRouteRouteWithChildren;
+  "/about": typeof AboutRoute;
+  "/catalog/$id": typeof CatalogIdRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/catalog': typeof CatalogRouteRouteWithChildren
-  '/about': typeof AboutRoute
-  '/catalog/$id': typeof CatalogIdRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/catalog": typeof CatalogRouteRouteWithChildren;
+  "/about": typeof AboutRoute;
+  "/catalog/$id": typeof CatalogIdRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/catalog' | '/about' | '/catalog/$id'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/catalog' | '/about' | '/catalog/$id'
-  id: '__root__' | '/' | '/catalog' | '/about' | '/catalog/$id'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/" | "/catalog" | "/about" | "/catalog/$id";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/catalog" | "/about" | "/catalog/$id";
+  id: "__root__" | "/" | "/catalog" | "/about" | "/catalog/$id";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CatalogRouteRoute: typeof CatalogRouteRouteWithChildren
-  AboutRoute: typeof AboutRoute
+  IndexRoute: typeof IndexRoute;
+  CatalogRouteRoute: typeof CatalogRouteRouteWithChildren;
+  AboutRoute: typeof AboutRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/catalog': {
-      id: '/catalog'
-      path: '/catalog'
-      fullPath: '/catalog'
-      preLoaderRoute: typeof CatalogRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/catalog/$id': {
-      id: '/catalog/$id'
-      path: '/$id'
-      fullPath: '/catalog/$id'
-      preLoaderRoute: typeof CatalogIdRouteImport
-      parentRoute: typeof CatalogRouteRoute
-    }
+    "/about": {
+      id: "/about";
+      path: "/about";
+      fullPath: "/about";
+      preLoaderRoute: typeof AboutRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/catalog": {
+      id: "/catalog";
+      path: "/catalog";
+      fullPath: "/catalog";
+      preLoaderRoute: typeof CatalogRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/catalog/$id": {
+      id: "/catalog/$id";
+      path: "/$id";
+      fullPath: "/catalog/$id";
+      preLoaderRoute: typeof CatalogIdRouteImport;
+      parentRoute: typeof CatalogRouteRoute;
+    };
   }
 }
 
 interface CatalogRouteRouteChildren {
-  CatalogIdRoute: typeof CatalogIdRoute
+  CatalogIdRoute: typeof CatalogIdRoute;
 }
 
 const CatalogRouteRouteChildren: CatalogRouteRouteChildren = {
   CatalogIdRoute: CatalogIdRoute,
-}
+};
 
 const CatalogRouteRouteWithChildren = CatalogRouteRoute._addFileChildren(
   CatalogRouteRouteChildren,
-)
+);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CatalogRouteRoute: CatalogRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();

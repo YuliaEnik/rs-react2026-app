@@ -1,18 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import SkeletonCard from "../../Components/Skeleton/Skeleton";
 import DetailsPage from "../../pages/DetailsPage/DetailsPage";
-import type { IData } from "../../types/types";
+import { fetchArtworkByIdQueryFn } from "../../hooks/useArtworksQueries";
+import { queryClient } from "../../queryClient";
 
 export const Route = createFileRoute("/catalog/$id")({
   loader: async ({ params }) => {
     const { id } = params;
-    const res = await fetch(`/api/artworks/${id}`);
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch artwork details");
-    }
-    const json = await res.json();
-    return (json.data || json) as IData;
+    return queryClient.ensureQueryData({
+      queryKey: ["artwork", id],
+      queryFn: () => fetchArtworkByIdQueryFn(id),
+    });
   },
   pendingComponent: () => (
     <div className="modal-page active">
