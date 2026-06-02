@@ -12,7 +12,7 @@ export const TEXT = {
   },
   navigation: {
     home: "Home",
-    about: "About us",
+    about: "About",
   },
   theme: {
     light: "Light",
