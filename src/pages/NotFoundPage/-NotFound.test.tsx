@@ -5,9 +5,14 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { routeTree } from "../../routeTree.gen";
 import NotFoundPage from "./NotFoundPage";
 import { ThemeProvider } from "../../themeContext/ThemeProvider";
+
+const testQueryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
 
 function renderRouterWithUrl(initialUrl: string) {
   const testHistory = createMemoryHistory({
@@ -18,12 +23,17 @@ function renderRouterWithUrl(initialUrl: string) {
     routeTree,
     history: testHistory,
     defaultNotFoundComponent: () => <NotFoundPage />,
+    context: {
+      queryClient: testQueryClient,
+    },
   });
 
   return render(
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>,
+    <QueryClientProvider client={testQueryClient}>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -57,6 +67,6 @@ describe("Feature 4: 404 Not Found Page Tests", () => {
     const homeLink = await screen.findByRole("link", { name: /back to home/i });
 
     expect(homeLink).toBeInTheDocument();
-    expect(homeLink).toHaveAttribute("href", "/");
+    expect(homeLink).toHaveAttribute("href", "/catalog");
   });
 });

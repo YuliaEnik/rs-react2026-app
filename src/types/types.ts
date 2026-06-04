@@ -11,17 +11,6 @@ export interface IData {
 export interface CardState {
   imgError: boolean;
 }
-export interface IHomeState {
-  loading: boolean;
-  repos: IData[] | null;
-  error: string | null;
-}
-export interface IDetails {
-  closeDetails: () => void;
-  card: IData | null;
-  isActive: boolean;
-  isLoading?: boolean;
-}
 
 export type SearchProps = {
   onSearch: (value: string) => void;

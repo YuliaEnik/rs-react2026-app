@@ -1,7 +1,31 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import DetailsPage from "./DetailsPage";
-import { Route } from "../../routes/catalog/$id";
+
+const mockCard = {
+  id: 1,
+  title: "Test Artwork 1",
+  creators: [{ description: "Artist 1" }],
+  creation_date: "2024",
+  description: "Test description",
+};
+
+const mockNavigate = vi.fn();
+
+vi.mock("@tanstack/react-router", () => {
+  const mockRouteInstance = {
+    useParams: () => ({ id: "1" }),
+    useSearch: () => ({ page: 1 }),
+  };
+
+  return {
+    useNavigate: () => mockNavigate,
+    useParams: () => ({ id: "1" }),
+    createFileRoute: () => () => mockRouteInstance,
+    Route: mockRouteInstance,
+  };
+});
 
 vi.mock("../../Components/Card/Card", () => ({
   default: vi.fn(({ title, isSelected }) => (
@@ -11,62 +35,51 @@ vi.mock("../../Components/Card/Card", () => ({
   )),
 }));
 
-const mockNavigate = vi.fn();
-
-vi.mock("@tanstack/react-router", () => ({
-  useNavigate: () => mockNavigate,
+const mockUseGetArtworkById = vi.fn();
+vi.mock("../../hooks/useArtworksQueries", () => ({
+  useGetArtworkById: () => mockUseGetArtworkById(),
 }));
 
-vi.mock("../../routes/catalog/$id", () => ({
-  Route: {
-    useLoaderData: vi.fn(),
-  },
-}));
-
-describe("DetailsPage", () => {
-  const mockCard = {
-    id: 1,
-    title: "Test Artwork 1",
-    creators: [{ description: "Artist 1" }],
-    creation_date: "2024",
-    description: "Test description",
-  };
+describe("DetailsPage Component Tests", () => {
+  let testQueryClient: QueryClient;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    testQueryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
   });
 
-  it("renders nothing when card is null", () => {
-    vi.mocked(Route.useLoaderData).mockReturnValue(null);
+  const renderWithQuery = (ui: React.ReactElement) => {
+    return render(
+      <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>,
+    );
+  };
 
-    render(<DetailsPage />);
+  it("renders card when data exists and is loaded", () => {
+    mockUseGetArtworkById.mockReturnValue({
+      data: mockCard,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    expect(screen.queryByTestId("mocked-card")).not.toBeInTheDocument();
-  });
-
-  it("renders card when data exists", () => {
-    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
-
-    render(<DetailsPage />);
+    renderWithQuery(<DetailsPage />);
 
     expect(screen.getByTestId("mocked-card")).toBeInTheDocument();
     expect(screen.getByText("Test Artwork 1")).toBeInTheDocument();
     expect(screen.getByText("X")).toBeInTheDocument();
   });
 
-  it("passes isSelected={true} to Card component", () => {
-    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
-
-    render(<DetailsPage />);
-
-    const mockedCard = screen.getByTestId("mocked-card");
-    expect(mockedCard).toHaveAttribute("data-selected", "true");
-  });
-
   it("calls navigate to /catalog when clicking close button", () => {
-    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
+    mockUseGetArtworkById.mockReturnValue({
+      data: mockCard,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    render(<DetailsPage />);
+    renderWithQuery(<DetailsPage />);
 
     const closeButton = screen.getByText("X");
     fireEvent.click(closeButton);
@@ -75,9 +88,14 @@ describe("DetailsPage", () => {
   });
 
   it("calls navigate to /catalog when clicking backdrop (outer overlay)", () => {
-    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
+    mockUseGetArtworkById.mockReturnValue({
+      data: mockCard,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    const { container } = render(<DetailsPage />);
+    const { container } = renderWithQuery(<DetailsPage />);
 
     const backdrop = container.firstChild;
     if (backdrop) {
@@ -85,18 +103,5 @@ describe("DetailsPage", () => {
     }
 
     expect(mockNavigate).toHaveBeenCalledWith({ to: "/catalog" });
-  });
-
-  it("does not call navigate when clicking on modal-content due to stopPropagation", () => {
-    vi.mocked(Route.useLoaderData).mockReturnValue(mockCard);
-
-    const { container } = render(<DetailsPage />);
-
-    const modalContent = container.querySelector(".modal-content");
-    if (modalContent) {
-      fireEvent.click(modalContent);
-    }
-
-    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

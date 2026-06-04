@@ -1,7 +1,6 @@
-import { type JSX, useCallback, useEffect, useMemo, useState } from "react";
+import { type JSX, useMemo } from "react";
 import { useNavigate, Outlet } from "@tanstack/react-router";
 import { Route } from "../../routes/catalog/route";
-import fetchArtworks from "../../Api/api";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import CardList from "../../Components/CardList/CardList";
 import ErrorBoundary from "../../Components/ErrorBoundary/ErrorBoundary";
@@ -9,60 +8,28 @@ import Pagination from "../../Components/Pagination/Pagination";
 import Search from "../../Components/Search/Search";
 import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 import { PAGINATION } from "../../constants/numbers";
-import { ERROR_MESSAGES } from "../../constants/text";
 import { SelectionFlyout } from "../../Components/SelectionFlyout/SelectionFlyout";
-import type { IHomeState } from "../../types/types";
+import { useGetArtworks } from "../../hooks/useArtworksQueries";
 import "./HomePage.scss";
 
 function HomePage(): JSX.Element {
   const navigate = useNavigate({ from: "/catalog" });
 
-  const { page } = Route.useSearch();
+  const { page = 1 } = Route.useSearch();
 
   const [searchQuery, setSearchQuery] = useLocalStorage(
     STORAGE_KEYS.SEARCH_QUERY,
     "",
   );
-  const [appState, setAppState] = useState<IHomeState>({
-    loading: true,
-    repos: null,
-    error: null,
-  });
+  const { data, error, isLoading } = useGetArtworks(searchQuery, page);
 
-  const [totalPages, setTotalPages] = useState<number>(1);
-
-  const getApi = useCallback(async (): Promise<void> => {
-    setAppState((prevState) => ({
-      ...prevState,
-      loading: true,
-      repos: null,
-      error: null,
-    }));
-    try {
-      const response = await fetchArtworks(searchQuery, page);
-      if (response && response.data) {
-        setAppState({ loading: false, repos: response.data, error: null });
-        setTotalPages(Math.ceil(response.total / PAGINATION.CARDS_PER_PAGE));
-      } else {
-        throw new Error(ERROR_MESSAGES.INVALID_RESPONSE);
-      }
-    } catch (error) {
-      setAppState((prevState) => ({
-        ...prevState,
-        loading: false,
-        repos: null,
-        error:
-          error instanceof Error ? error.message : ERROR_MESSAGES.UNEXPECTED,
-      }));
-    }
-  }, [searchQuery, page]);
-
-  useEffect(() => {
-    getApi();
-  }, [getApi]);
+  const totalPages = useMemo(() => {
+    if (!data?.total) return 1;
+    return Math.ceil(data.total / PAGINATION.CARDS_PER_PAGE);
+  }, [data?.total]);
 
   const handleSearch = (searchValue: string) => {
-    if (searchValue === searchQuery || appState.loading) return;
+    if (searchValue === searchQuery || isLoading) return;
     setSearchQuery(searchValue);
     void navigate({
       search: (prev) => ({ ...prev, page: 1 }),
@@ -70,26 +37,20 @@ function HomePage(): JSX.Element {
   };
 
   const handlePageChange = (newPage: number) => {
-    if (appState.loading) return;
+    if (isLoading) return;
     void navigate({
       search: (prev) => ({ ...prev, page: newPage }),
     });
   };
 
-  const handleCardClick = useCallback(
-    (id: number) => {
-      void navigate({
-        to: "/catalog/$id",
-        params: { id: String(id) },
-      });
-    },
-    [navigate],
-  );
+  const handleCardClick = (id: number) => {
+    void navigate({
+      to: "/catalog/$id",
+      params: { id: String(id) },
+    });
+  };
 
-  const shouldShowPagination = useMemo(
-    () => !appState.loading && appState.repos && appState.repos.length > 0,
-    [appState.loading, appState.repos],
-  );
+  const shouldShowPagination = !isLoading && data?.data && data.data.length > 0;
 
   return (
     <ErrorBoundary>
@@ -97,9 +58,9 @@ function HomePage(): JSX.Element {
         <Search onSearch={handleSearch} />
         <div className="cards-content">
           <CardList
-            loading={appState.loading}
-            repos={appState.repos}
-            error={appState.error}
+            loading={isLoading}
+            repos={data?.data || null}
+            error={error instanceof Error ? error.message : null}
             searchQuery={searchQuery}
             onCardClick={handleCardClick}
           />

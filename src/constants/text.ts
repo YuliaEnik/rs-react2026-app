@@ -12,11 +12,15 @@ export const TEXT = {
   },
   navigation: {
     home: "Home",
-    about: "About us",
+    about: "About",
   },
   theme: {
     light: "Light",
     dark: "Dark",
+  },
+  refresh: {
+    refresh: "Refresh",
+    updating: "Updating",
   },
   footer: {
     year: "2026",
