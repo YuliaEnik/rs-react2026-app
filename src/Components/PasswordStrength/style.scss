@@ -1,0 +1,13 @@
+.password-strength-line-wrapper {
+  align-self: end;
+  width: 60%;
+  height: 0.5rem;
+  border-radius: 0.3rem;
+  margin: 0.5rem 0rem;
+  overflow: hidden;
+}
+
+.password-strength-line {
+  height: 100%;
+  transition: all 0.3s ease;
+}

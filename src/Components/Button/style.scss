@@ -1,0 +1,27 @@
+.button_submit {
+  height: 2rem;
+  width: 8rem;
+  align-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 0.01rem solid black;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  &:not(:disabled) {
+    background-color: #52c41a;
+    border: 0.01rem solid #52c41a;
+    color: white;
+    &:hover {
+      background-color: rgba(90, 156, 66, 0.5);
+    }
+  }
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+}
