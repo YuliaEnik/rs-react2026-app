@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   type Control,
   Controller,
   type FieldValues,
   type Path,
+  useWatch,
 } from 'react-hook-form';
-
 interface AutocompleteProps<T extends FieldValues> {
   name: Path<T>;
   control: Control<T>;
@@ -19,39 +19,36 @@ const ControlledAutocomplete = <T extends FieldValues>({
   label,
   options,
 }: AutocompleteProps<T>) => {
-  const [inputValue, setInputValue] = useState('');
-  const [filtered, setFiltered] = useState<string[]>([]);
+  const [filterText, setFilterText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const autocompleteId = String(name);
+
+  const formValue = useWatch({ control, name }) || '';
+
+  const inputValue = isOpen ? filterText : formValue;
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, value }, fieldState: { error } }) => {
-        useEffect(() => {
-          setInputValue(value || '');
-        }, [value]);
-
+      render={({ field: { onChange }, fieldState: { error } }) => {
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const val = e.target.value;
-          setInputValue(val);
+          setFilterText(val);
           onChange(val);
           setIsOpen(true);
-          setFiltered(
-            val
-              ? options.filter((o) =>
-                  o.toLowerCase().includes(val.toLowerCase())
-                )
-              : []
-          );
         };
 
         const handleSelect = (option: string) => {
-          setInputValue(option);
           onChange(option);
           setIsOpen(false);
         };
+
+        const filteredOptions = filterText
+          ? options.filter((o) =>
+              o.toLowerCase().includes(filterText.toLowerCase())
+            )
+          : options;
 
         return (
           <div className="input-wrapper">
@@ -64,12 +61,17 @@ const ControlledAutocomplete = <T extends FieldValues>({
                 className="input"
                 value={inputValue}
                 onChange={handleInputChange}
-                onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+                onBlur={() =>
+                  setTimeout(() => {
+                    setIsOpen(false);
+                    setFilterText('');
+                  }, 200)
+                }
                 autoComplete="off"
               />
-              {isOpen && filtered.length > 0 && (
+              {isOpen && filteredOptions.length > 0 && (
                 <ul className="autocomplete-list">
-                  {filtered.map((item, index) => (
+                  {filteredOptions.map((item, index) => (
                     <li
                       key={index}
                       onClick={() => handleSelect(item)}
