@@ -1,249 +1,127 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import type { IData } from '../../types/types';
 import { schema } from '../../helpers/schema';
-import { PasswordStrength } from '../PasswordStrength/passwordStreigth';
 import { Button } from '../Button/button';
 import './style.scss';
-
-const countries = ['USA', 'Canada', 'Ukraine', 'Germany', 'Kazakhstan'];
+import { ControlledAutocomplete } from './Controllers/controlledSelect';
+import { ControlledInput } from './Controllers/controlledInput';
+import { useCountryStore } from '../../Store/useCountryStore';
+import { ControlledPassword } from './Controllers/controlledPassword';
+import { ControlledCheckbox } from './Controllers/controlledCheckbox';
+import { ControlledFile } from './Controllers/controlledFile';
+import { ControlledGender } from './Controllers/controlledGender';
+import { convertFileToBase64 } from '../../helpers/converFile';
 
 const FormUseHook = () => {
   const [savedMessage, setSavedMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [filteredCountries, setFilteredCountries] = useState<string[]>([]);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
+  const countries = useCountryStore((state) => state.list);
+  const addCard = useCountryStore((state) => state.addCard);
 
   const {
-    register,
     handleSubmit,
-    watch,
+    control,
     reset,
-    formState: { errors, isValid },
-    setValue,
+    formState: { isValid },
   } = useForm<IData>({
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
 
-  const passwordValue = watch('password') || '';
+  const onSubmit = async (data: IData) => {
+    try {
+      let fileBase64 = '';
+      if (data.file && data.file.length > 0) {
+        fileBase64 = await convertFileToBase64(data.file[0]);
+      }
 
-  const onSubmit = (data: IData) => {
-    console.log(data);
-    setSavedMessage('Information has been saved');
-    setTimeout(() => {
-      setSavedMessage('');
-      reset();
-      setInputValue('');
-    }, 2000);
-  };
+      const cardData = {
+        name: data.name,
+        age: data.age,
+        email: data.email,
+        country: data.country,
+        gender: data.gender,
+        agree: data.agree,
+        file: fileBase64,
+      };
 
-  useEffect(() => {
-    if (inputValue) {
-      const filtered = countries.filter((country: string) =>
-        country.toLowerCase().includes(inputValue.toLowerCase())
-      );
-      setFilteredCountries(filtered);
-    } else {
-      setFilteredCountries([]);
+      addCard(cardData);
+
+      setSavedMessage('Information has been saved');
+      setTimeout(() => {
+        setSavedMessage('');
+        reset();
+      }, 2000);
+    } catch (error) {
+      console.error('Invalid form:', error);
     }
-  }, [inputValue]);
-
-  const handleCountrySelect = (country: string) => {
-    setInputValue(country);
-    setFilteredCountries([]);
-    setValue('country', country, { shouldValidate: true });
   };
 
   return (
-    <>
-      <form
-        id="myForm"
-        className="form-wrapper"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="input-wrapper">
-          <label className="form-line">
-            Name:
-            <input
-              type="text"
-              placeholder="Enter your name..."
-              className="input"
-              {...register('name')}
-            />
-          </label>
-          {errors.name ? (
-            <p className="error">{errors.name.message}</p>
-          ) : (
-            <br />
-          )}
-        </div>
+    <form
+      id="myForm"
+      className="form-wrapper"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <h2>Control Form </h2>
 
-        <div className="input-wrapper">
-          <label className="form-line">
-            Age:
-            <input
-              type="number"
-              className="input"
-              placeholder="Enter your age..."
-              {...register('age')}
-            />
-          </label>
-          {errors.age ? <p className="error">{errors.age.message}</p> : <br />}
-        </div>
+      <ControlledInput
+        control={control}
+        name="name"
+        label="Name"
+        placeholder="Enter your name..."
+      />
 
-        <div className="input-wrapper">
-          <label className="form-line">
-            Email:
-            <input
-              type="email"
-              placeholder="Enter your email..."
-              className="input"
-              {...register('email')}
-            />
-          </label>
-          {errors.email ? (
-            <p className="error">{errors.email.message}</p>
-          ) : (
-            <br />
-          )}
-        </div>
+      <ControlledInput
+        control={control}
+        name="age"
+        label="Age"
+        type="number"
+        placeholder="Enter your age..."
+      />
 
-        <div className="input-wrapper">
-          <label className="form-line">
-            Country:
-            <input
-              type="text"
-              placeholder="Enter your country..."
-              className="input"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onBlur={() => setTimeout(() => setFilteredCountries([]), 200)}
-              autoComplete="off"
-            />
-            {filteredCountries.length > 0 && (
-              <ul className="autocomplete-list">
-                {filteredCountries.map((country, index) => (
-                  <li
-                    key={index}
-                    onClick={() => handleCountrySelect(country)}
-                    className="autocomplete-item"
-                  >
-                    {country}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <input type="hidden" {...register('country')} />
-          </label>
-          {errors.country ? (
-            <p className="error">{errors.country.message}</p>
-          ) : (
-            <br />
-          )}
-        </div>
+      <ControlledInput
+        control={control}
+        name="email"
+        label="Email"
+        type="email"
+        placeholder="Enter your email..."
+      />
 
-        <div className="input-wrapper">
-          <label className="form-line">
-            Male
-            <input type="radio" {...register('gender')} value="male" />
-          </label>
-          <label className="form-line">
-            Female
-            <input type="radio" {...register('gender')} value="female" />
-          </label>
-          {errors.gender ? (
-            <p className="error">{errors.gender.message}</p>
-          ) : (
-            <br />
-          )}
-        </div>
+      <ControlledAutocomplete
+        control={control}
+        name="country"
+        label="Country"
+        options={countries}
+      />
 
-        <div className="input-wrapper">
-          <label className="form-line">
-            Choose image:
-            <input
-              id="file"
-              type="file"
-              accept="image/png, image/jpeg"
-              {...register('file')}
-            />
-          </label>
-          {errors.file ? (
-            <p className="error">{errors.file.message}</p>
-          ) : (
-            <br />
-          )}
-        </div>
+      <ControlledGender control={control} name="gender" />
 
-        <div className="input-wrapper">
-          <label className="form-line">
-            I agree:
-            <input type="checkbox" {...register('agree')} />
-          </label>
-          {errors.agree ? (
-            <p className="error">{errors.agree.message}</p>
-          ) : (
-            <br />
-          )}
-        </div>
-        <PasswordStrength passwordValue={passwordValue} />
-        <div className="input-wrapper_password">
-          <label className="form-line">
-            Password:
-            <input
-              className="input"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password..."
-              {...register('password')}
-            />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
-          </label>
+      <ControlledFile control={control} name="file" label="Choose file" />
 
-          {errors.password && (
-            <p className="error">{errors.password.message}</p>
-          )}
-        </div>
+      <ControlledCheckbox control={control} name="agree" label="I agree" />
 
-        <div className="input-wrapper_password">
-          <label className="form-line">
-            Confirm Password:
-            <input
-              className="input"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Confirm your password..."
-              {...register('confirmPassword')}
-            />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
-          </label>
-          {errors.confirmPassword && (
-            <p className="error">{errors.confirmPassword.message}</p>
-          )}
-        </div>
+      <ControlledPassword
+        name={'password'}
+        control={control}
+        label="Password"
+        placeholder="Enter your password..."
+        showStrength={true}
+      />
 
-        <Button type="submit" disabled={!isValid}>
-          Submit
-        </Button>
-        {savedMessage ? <p className="form-message">{savedMessage}</p> : <br />}
-      </form>
-    </>
+      <ControlledPassword
+        name={'confirmPassword'}
+        control={control}
+        label="Confirm password"
+        placeholder="Confirm your password..."
+      />
+
+      <Button type="submit" disabled={!isValid}>
+        Submit
+      </Button>
+      {savedMessage ? <p className="form-message">{savedMessage}</p> : <br />}
+    </form>
   );
 };
 

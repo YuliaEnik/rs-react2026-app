@@ -14,8 +14,16 @@ const schema: yup.ObjectSchema<IData> = yup
       .required('Age is required'),
     email: yup
       .string()
+      .required('Email is required')
       .email('Invalid email format')
-      .required('Email is required'),
+      .test('dot-in-domain', 'Invalid email format', (value) => {
+        if (!value) return false;
+        const domainPart = value.split('@')[1];
+        if (!domainPart || !domainPart.includes('.')) {
+          return false;
+        }
+        return true;
+      }),
     country: yup.string().required('Enter country'),
     gender: yup.string().required('Choose your gender'),
     agree: yup.boolean().oneOf([true], 'You need to agree').defined(),

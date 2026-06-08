@@ -1,8 +1,14 @@
-import './App.css';
 import { FormUseHook } from './Components/Forms/formUseHook';
+import './App.css';
+import { FormUnControl } from './Components/Forms/formUnControl';
 
 function App() {
-  return <FormUseHook />;
+  return (
+    <>
+      <FormUnControl />
+      <FormUseHook />;
+    </>
+  );
 }
 
 export default App;

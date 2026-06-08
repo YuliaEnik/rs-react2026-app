@@ -21,6 +21,10 @@
   gap: 0.1rem;
 }
 
+.password {
+  position: relative;
+}
+
 .input-wrapper {
   display: flex;
   flex-direction: column;
@@ -29,17 +33,19 @@
   height: 3rem;
   position: relative;
   &_password {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: auto;
     width: 100%;
     text-align: end;
-    height: 3rem;
+    height: 4.5rem;
     .input {
       padding-right: 1rem;
     }
     .password-toggle {
       position: absolute;
       right: 1rem;
-      top: 25%;
+      top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
