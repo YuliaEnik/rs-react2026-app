@@ -220,7 +220,7 @@ const FormUnControl = ({ onSuccess }: FormUnControlProps) => {
 
       <div className="input-wrapper_password">
         <label className="form-line password" htmlFor="confirmPassword">
-          Confirm Password:
+          Confirm password:
           <input
             id="confirmPassword"
             className="input"

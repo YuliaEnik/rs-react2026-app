@@ -26,7 +26,6 @@ function App() {
         <Portal
           isOpen={isHookModalOpen}
           onClose={() => setIsHookModalOpen(false)}
-          title="Controlled Form (React Hook Form)"
         >
           <FormUseHook onSuccess={() => setIsHookModalOpen(false)} />
         </Portal>
@@ -34,7 +33,6 @@ function App() {
         <Portal
           isOpen={isUncontrolledModalOpen}
           onClose={() => setIsUncontrolledModalOpen(false)}
-          title="Uncontrolled Form (useRef)"
         >
           <FormUnControl onSuccess={() => setIsUncontrolledModalOpen(false)} />
         </Portal>

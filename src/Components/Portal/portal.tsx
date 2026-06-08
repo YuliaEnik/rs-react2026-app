@@ -10,73 +10,47 @@ interface PortalProps {
 }
 
 export const Portal = ({ isOpen, onClose, children }: PortalProps) => {
-  const portalRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const firstElementRef = useRef<HTMLButtonElement>(null);
+  const lastElementRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    previousFocusRef.current = document.activeElement as HTMLElement;
     document.body.style.overflow = 'hidden';
 
-    const focusableSelectors =
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
-    const timeoutId = setTimeout(() => {
-      if (portalRef.current) {
-        const focusableElements =
-          portalRef.current.querySelectorAll(focusableSelectors);
-        if (focusableElements.length > 0) {
-          (focusableElements[0] as HTMLElement).focus();
-        }
-      }
-    }, 0);
+    if (firstElementRef.current) {
+      firstElementRef.current.focus();
+    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
-        return;
-      }
-      if (e.key === 'Tab' && portalRef.current) {
-        const focusableElements =
-          portalRef.current.querySelectorAll(focusableSelectors);
-
-        if (focusableElements.length === 0) {
-          e.preventDefault();
-          return;
-        }
-
-        const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[
-          focusableElements.length - 1
-        ] as HTMLElement;
-
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            lastElement.focus();
-            e.preventDefault();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            firstElement.focus();
-            e.preventDefault();
-          }
-        }
       }
     };
+
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      clearTimeout(timeoutId);
       document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
-      if (previousFocusRef.current) {
-        previousFocusRef.current.focus();
-      }
     };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const handleFocusFirstBarrier = (e: React.FocusEvent) => {
+    e.preventDefault();
+    if (lastElementRef.current) {
+      lastElementRef.current.focus();
+    }
+  };
+
+  const handleFocusLastBarrier = (e: React.FocusEvent) => {
+    e.preventDefault();
+    if (firstElementRef.current) {
+      firstElementRef.current.focus();
+    }
+  };
 
   return createPortal(
     <div
@@ -87,12 +61,18 @@ export const Portal = ({ isOpen, onClose, children }: PortalProps) => {
       <div
         className="portal-content"
         onClick={(e) => e.stopPropagation()}
-        ref={portalRef}
         role="dialog"
         aria-modal="true"
       >
+        <div
+          tabIndex={0}
+          onFocus={handleFocusFirstBarrier}
+          className="sr-only"
+        />
+
         <div className="portal-header">
           <button
+            ref={firstElementRef}
             className="portal-close-btn"
             onClick={onClose}
             aria-label="Close portal"
@@ -100,7 +80,16 @@ export const Portal = ({ isOpen, onClose, children }: PortalProps) => {
             <IoClose size={24} />
           </button>
         </div>
+
         <div className="portal-body">{children}</div>
+
+        <button
+          ref={lastElementRef}
+          onFocus={handleFocusLastBarrier}
+          className="portal-loop-trigger"
+          aria-hidden="true"
+          tabIndex={0}
+        />
       </div>
     </div>,
     document.body
