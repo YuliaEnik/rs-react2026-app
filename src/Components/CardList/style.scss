@@ -28,7 +28,7 @@
   opacity: 0;
   animation:
     fadeIn 0.7s ease-in-out forwards,
-    greenHighlight 5s ease-in-out forwards;
+    greenHighlight 10s ease-in-out forwards;
 }
 
 @keyframes fadeIn {
@@ -42,6 +42,9 @@
 
 @keyframes greenHighlight {
   0% {
+    box-shadow: 0 0 12px 6px rgba(184, 245, 140, 0.9);
+  }
+  90% {
     box-shadow: 0 0 12px 6px rgba(189, 241, 151, 0.9);
   }
   100% {

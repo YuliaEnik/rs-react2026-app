@@ -30,7 +30,7 @@ const ControlledGender = <T extends FieldValues>({
             <input
               id={maleInputId}
               type="radio"
-              name={name}
+              name={baseName}
               value="male"
               checked={value === 'male'}
               onChange={() => onChange('male')}
@@ -41,7 +41,7 @@ const ControlledGender = <T extends FieldValues>({
             <input
               id={femaleInputId}
               type="radio"
-              name={name}
+              name={baseName}
               value="female"
               checked={value === 'female'}
               onChange={() => onChange('female')}

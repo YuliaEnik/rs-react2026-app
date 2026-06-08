@@ -9,14 +9,17 @@ import { Button } from '../Button/button';
 import { Input } from './Input/input';
 import { PasswordStrength } from '../PasswordStreingth/passwordStreigth';
 
-const FormUnControl = () => {
-  const [savedMessage, setSavedMessage] = useState('');
+interface FormUnControlProps {
+  onSuccess: () => void;
+}
+
+const FormUnControl = ({ onSuccess }: FormUnControlProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const countries = useCountryStore((state) => state.list);
   const addCard = useCountryStore((state) => state.addCard);
-  const [filteredCountries, setFilteredCountries] = useState<string[]>([]);
 
   const [passwordValue, setPasswordValue] = useState('');
 
@@ -29,36 +32,12 @@ const FormUnControl = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
-  const handleCountryInputChange = () => {
-    const value = countryRef.current?.value || '';
-    if (value) {
-      const filtered = countries.filter((country) =>
-        country.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredCountries(filtered);
-    } else {
-      setFilteredCountries([]);
-    }
-  };
-
-  const handleCountrySelect = (country: string) => {
-    if (countryRef.current) {
-      countryRef.current.value = country;
-    }
-    setFilteredCountries([]);
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
-
   const handlePasswordChange = () => {
     setPasswordValue(passwordRef.current?.value || '');
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const currentForm = e.currentTarget;
 
     const dataFromFields = new FormData(currentForm);
@@ -69,7 +48,7 @@ const FormUnControl = () => {
       age: Number(ageRef.current?.value) || undefined,
       email: emailRef.current?.value || '',
       country: countryRef.current?.value || '',
-      gender: selectedGender,
+      gender: selectedGender || undefined,
       file: fileRef.current?.files || ([] as unknown as FileList),
       agree: agreeRef.current?.checked || false,
       password: passwordRef.current?.value || '',
@@ -101,20 +80,19 @@ const FormUnControl = () => {
         age: formData.age || 0,
         email: formData.email,
         country: formData.country,
-        gender: formData.gender,
+        gender: formData.gender || '',
         agree: formData.agree,
         file: fileBase64,
       };
 
       addCard(cardData);
 
-      setSavedMessage('Information has been saved');
+      currentForm.reset();
+      setPasswordValue('');
+      setShowPassword(false);
+      setShowConfirmPassword(false);
 
-      setTimeout(() => {
-        setSavedMessage('');
-        currentForm.reset();
-        setPasswordValue('');
-      }, 2000);
+      onSuccess();
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         const validationErrors: { [key: string]: string } = {};
@@ -164,22 +142,14 @@ const FormUnControl = () => {
             placeholder="Enter your country..."
             className="input"
             ref={countryRef}
-            onChange={handleCountryInputChange}
+            list="uncontrolled-datalist-countries"
             autoComplete="off"
           />
-          {filteredCountries.length > 0 && (
-            <ul className="autocomplete-list">
-              {filteredCountries.map((country, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleCountrySelect(country)}
-                  className="autocomplete-item"
-                >
-                  {country}
-                </li>
-              ))}
-            </ul>
-          )}
+          <datalist id="uncontrolled-datalist-countries">
+            {countries.map((country, index) => (
+              <option key={index} value={country} />
+            ))}
+          </datalist>
         </label>
         {errors.country && <p className="error">{errors.country}</p>}
       </div>
@@ -240,7 +210,7 @@ const FormUnControl = () => {
           <button
             type="button"
             className="password-toggle"
-            onClick={togglePasswordVisibility}
+            onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
@@ -254,16 +224,16 @@ const FormUnControl = () => {
           <input
             id="confirmPassword"
             className="input"
-            type={showPassword ? 'text' : 'password'}
+            type={showConfirmPassword ? 'text' : 'password'}
             placeholder="Confirm your password..."
             ref={confirmPasswordRef}
           />
           <button
             type="button"
             className="password-toggle"
-            onClick={togglePasswordVisibility}
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </label>
         {errors.confirmPassword && (
@@ -272,7 +242,6 @@ const FormUnControl = () => {
       </div>
 
       <Button type="submit">Submit</Button>
-      {savedMessage ? <p className="form-message">{savedMessage}</p> : <br />}
     </form>
   );
 };

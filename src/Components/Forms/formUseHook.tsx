@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import type { IData } from '../../types/types';
 import { schema } from '../../helpers/schema';
 import { Button } from '../Button/button';
-import './style.scss';
 import { ControlledAutocomplete } from './Controllers/controlledSelect';
 import { ControlledInput } from './Controllers/controlledInput';
 import { useCountryStore } from '../../Store/useCountryStore';
@@ -13,9 +11,13 @@ import { ControlledCheckbox } from './Controllers/controlledCheckbox';
 import { ControlledFile } from './Controllers/controlledFile';
 import { ControlledGender } from './Controllers/controlledGender';
 import { convertFileToBase64 } from '../../helpers/converFile';
+import './style.scss';
 
-const FormUseHook = () => {
-  const [savedMessage, setSavedMessage] = useState('');
+interface FormUseHookProps {
+  onSuccess: () => void;
+}
+
+const FormUseHook = ({ onSuccess }: FormUseHookProps) => {
   const countries = useCountryStore((state) => state.list);
   const addCard = useCountryStore((state) => state.addCard);
 
@@ -47,12 +49,8 @@ const FormUseHook = () => {
       };
 
       addCard(cardData);
-
-      setSavedMessage('Information has been saved');
-      setTimeout(() => {
-        setSavedMessage('');
-        reset();
-      }, 2000);
+      reset();
+      onSuccess();
     } catch (error) {
       console.error('Invalid form:', error);
     }
@@ -64,7 +62,7 @@ const FormUseHook = () => {
       className="form-wrapper"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <h2>Control Form </h2>
+      <h2>FormUseHook </h2>
 
       <ControlledInput
         control={control}
@@ -120,7 +118,6 @@ const FormUseHook = () => {
       <Button type="submit" disabled={!isValid}>
         Submit
       </Button>
-      {savedMessage ? <p className="form-message">{savedMessage}</p> : <br />}
     </form>
   );
 };
