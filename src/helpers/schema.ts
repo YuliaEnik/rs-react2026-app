@@ -1,6 +1,9 @@
 import * as yup from 'yup';
 import type { IData } from '../types/types';
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg', 'image/jpg'];
+
 const schema: yup.ObjectSchema<IData> = yup
   .object({
     name: yup
@@ -41,11 +44,18 @@ const schema: yup.ObjectSchema<IData> = yup
       .required('Confirm password is required'),
     file: yup
       .mixed<FileList>()
-      .defined()
+      .required('Choose a file')
+      .test('fileType', 'Only PNG or JPEG images are allowed', (value) => {
+        if (!value || value.length === 0) return false;
+        return ALLOWED_FILE_TYPES.includes(value[0]?.type);
+      })
       .test(
-        'required',
-        'Choose a file',
-        (value) => value && value instanceof FileList && value.length > 0
+        'fileSize',
+        `File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)} MB`,
+        (value) => {
+          if (!value || value.length === 0) return false;
+          return value[0]?.size <= MAX_FILE_SIZE;
+        }
       ),
   })
   .required();
