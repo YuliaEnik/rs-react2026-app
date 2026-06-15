@@ -1,24 +1,23 @@
 # Performance Optimization Report
 
+### Commit duration = Render + Layout effects + Passive effects,
+
 ## Baseline Measurements
 
 ### Interaction A: Sort countries
 
-### Commit duration = Render + Layout effects + Passive effects, 
-
-- **Commit duration**: 586ms
+- **Commit duration**: 586 ms
 - **Render duration**: 584 ms
 - **Screenshot**: ![screenshot](./public/baseline/screen1.png)
 - **Screenshot**: ![screenshot](./public/baseline/screen2.png)
 
 **Component:** `CountryList`
-- **Commit duration**: 4.6s
 - **Render duration**: 84.2 ms
 - **Why did this render:** props changed (sortField, onYearChange)
 
 ### Interaction B: Search countries
 
-- **Commit duration**: 271.3
+- **Commit duration**: 271.3 ms
 - **Render duration**: 270.9 ms
 - **Screenshot**: ![screenshot](./public/baseline/screen3.png)
 - **Screenshot**: ![screenshot](./public/baseline/screen3.png)
@@ -52,4 +51,52 @@
 - **Component:** `CountryList` 
 - **Render duration**: 86.2 ms
 - **Why did this render:** props changed (years, onChange)
+
+
+## Optimized Measurements
+
+### Interaction A: Sort countries
+
+- **Commit duration**: 28.2 ms
+- **Render duration**: 28 ms
+- **Screenshot**: ![screenshot](./public/optimized/screen9.png)
+- **Screenshot**: ![screenshot](./public/optimized/screen10.png)
+
+**Component:** `CountryList`
+- **Render duration**: 10.9 ms
+- **Why did this render:** props changed (sortField)
+
+### Interaction B: Search countries
+
+- **Commit duration**: 3 ms
+- **Render duration**: 2.5 ms
+- **Screenshot**: ![screenshot](./public/optimized/screen11.png)
+- **Screenshot**: ![screenshot](./public/optimized/screen12.png)
+
+**Component:** `CountryList`
+- **Did not client render**
+
+**Component:** `YearSelector`
+- **Did not client render**
+
+### Interaction C: Change year
+
+- **Commit duration**: 63.6 ms
+- **Render duration**: 63.4 ms
+- **Screenshot**: ![screenshot](./public/optimized/screen13.png)
+- **Screenshot**: ![screenshot](./public/optimized/screen14.png)
+
+- **Component:** `CountryList` 
+- **Render duration**: 9.2 ms
+- **Why did this render:** props changed (selectedYear)
+
+### Interaction D: Toggle column
+
+- **Commit duration**: 9.2 ms
+- **Render duration**: 8.9 ms
+- **Screenshot**: ![screenshot](./public/optimized/screen15.png)
+- **Screenshot**: ![screenshot](./public/optimized/screen16.png)
+
+- **Component:** `CountryList` 
+- **Did not client render**
 
