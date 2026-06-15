@@ -17,7 +17,7 @@ type CountryListProps = {
 };
 
 const ITEM_HEIGHT = 180;
-const BUFFER_ITEMS = 3;
+const BUFFER_ITEMS = 5;
 
 export const CountryList = memo(({
   countries,
@@ -55,6 +55,7 @@ export const CountryList = memo(({
   }, [countries, searchQuery, selectedRegion, sortField, sortOrder, selectedYear]);
 
   const [scrollTop, setScrollTop] = useState(0);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,9 +65,15 @@ export const CountryList = memo(({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const { visibleCountries, paddingTop, paddingBottom } = useMemo(() => {
-    const windowHeight = window.innerHeight;
-    
     const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER_ITEMS);
     const endIndex = Math.min(
       filteredCountries.length,
@@ -74,7 +81,6 @@ export const CountryList = memo(({
     );
 
     const visible = filteredCountries.slice(startIndex, endIndex);
-
     const startPadding = startIndex * ITEM_HEIGHT;
     const endPadding = (filteredCountries.length - endIndex) * ITEM_HEIGHT;
 
@@ -83,7 +89,7 @@ export const CountryList = memo(({
       paddingTop: startPadding,
       paddingBottom: endPadding,
     };
-  }, [scrollTop, filteredCountries]);
+  }, [scrollTop, windowHeight, filteredCountries]);
 
   if (filteredCountries.length === 0) {
     return <div className={styles.noData}>No countries found</div>;
