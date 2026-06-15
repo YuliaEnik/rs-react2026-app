@@ -4,7 +4,7 @@
 
 ### Interaction A: Sort countries
 
-### Commit duration — Render + Layout effects + Passive effects, 
+### Commit duration = Render + Layout effects + Passive effects, 
 
 - **Commit duration**: 586ms
 - **Render duration**: 584 ms

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo,useState } from 'react';
 import { useCo2Data } from '../../hooks/useCo2Data';
 import { LoadingSpinner } from '../loading-spinner/loading-spinner';
 import { SearchBar } from '../search-bar/search-bar';
@@ -8,9 +8,10 @@ import { ColumnModal } from '../column-modal/column-modal';
 import { getAvailableYears, getAvailableColumns } from '../../utils/data-transformers';
 
 import styles from './app.module.css';
+import { useDebounce } from '../../hooks/useDebounce';
+
 
 type AppState = {
-  searchQuery: string;
   selectedRegion: string;
   selectedYear: number;
   sortField: 'name' | 'population';
@@ -21,9 +22,10 @@ type AppState = {
 
 export const App = () => {
   const { data, isLoading, error } = useCo2Data();
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearchQuery = useDebounce(searchInput, 300);
 
   const [state, setState] = useState<AppState>({
-    searchQuery: '',
     selectedRegion: '',
     selectedYear: 2020,
     sortField: 'population',
@@ -32,39 +34,40 @@ export const App = () => {
     isColumnModalOpen: false,
   });
 
-  const years = data ? getAvailableYears(data) : [];
-  const availableColumns = getAvailableColumns();
 
-  const handleSearch = (value: string) => {
-    setState({ ...state, searchQuery: value });
-  };
+  const years = useMemo(() => ( data ? getAvailableYears(data) : []), [data]);
+  const availableColumns = useMemo(() => getAvailableColumns(), []);
 
-  const handleYearChange = (year: number) => {
-    setState({ ...state, selectedYear: year });
-  };
+  const handleSearch = useCallback((value: string) => {
+    setSearchInput(value);
+  }, []);
+
+  const handleYearChange = useCallback((year: number) => {
+    setState((prev) => ({ ...prev, selectedYear: year }));
+  }, []);
 
   const handleSortFieldChange = (field: 'name' | 'population') => {
-    setState({ ...state, sortField: field });
+    setState((prev) => ({ ...prev, sortField: field }));
   };
 
   const handleSortOrderToggle = () => {
-    setState({
-      ...state,
-      sortOrder: state.sortOrder === 'asc' ? 'desc' : 'asc',
-    });
+    setState((prev) => ({
+      ...prev,
+      sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
+    }));
   };
 
   const handleColumnToggle = (column: string) => {
-    setState({
-      ...state,
-      selectedColumns: state.selectedColumns.includes(column)
-        ? state.selectedColumns.filter((c) => c !== column)
-        : [...state.selectedColumns, column],
-    });
+    setState((prev) => ({
+      ...prev,
+      selectedColumns: prev.selectedColumns.includes(column)
+        ? prev.selectedColumns.filter((c) => c !== column)
+        : [...prev.selectedColumns, column],
+    }));
   };
 
   const handleModalToggle = () => {
-    setState({ ...state, isColumnModalOpen: !state.isColumnModalOpen });
+    setState((prev) => ({ ...prev, isColumnModalOpen: !prev.isColumnModalOpen }));
   };
 
   if (isLoading) {
@@ -85,7 +88,7 @@ export const App = () => {
 
       {/* Controls */}
       <div className={styles.controls}>
-        <SearchBar value={state.searchQuery} onChange={handleSearch} />
+        <SearchBar value={searchInput} onChange={handleSearch} />
         <YearSelector year={state.selectedYear} years={years} onChange={handleYearChange} />
 
         <div className={styles.sortContainer}>
@@ -114,7 +117,7 @@ export const App = () => {
       {/* Country List */}
       <CountryList
         countries={data}
-        searchQuery={state.searchQuery}
+        searchQuery={debouncedSearchQuery}
         selectedColumns={state.selectedColumns}
         selectedRegion={state.selectedRegion}
         selectedYear={state.selectedYear}
