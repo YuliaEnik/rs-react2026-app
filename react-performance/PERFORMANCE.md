@@ -118,14 +118,23 @@ To ensure maximum performance, I applied targeted optimization. Mindless wrappin
 
 ## 1. Why useCallback was omitted for certain functions:
 
-- **handleSortFieldChange** and **handleSortOrderToggle**: these functions are passed directly to native HTML elements (<select> and <button>).   
+### handleSortFieldChange and handleSortOrderToggle:
+
+
+these functions are passed directly to native HTML elements.
 Native tags do not have memoization mechanisms, and the stability of reference links does not matter to them.   
 Using useCallback here would run in vain, needlessly putting load on the CPU
 
-- **handleColumnToggle** and **handleModalToggle**: these are passed to the ColumnModal component.   
+### handleColumnToggle and handleModalToggle: 
+
+
+these are passed to the ColumnModal component.   
 Since the modal component itself is not memoized (reasons specified below), stabilizing the references for these functions is pointless
 
-- **Note**: I kept useCallback strictly for handleSearch and handleYearChange because they are passed to the memoized controls SearchBar and YearSelector,  
+### Note: 
+
+
+I kept useCallback strictly for handleSearch and handleYearChange because they are passed to the memoized controls SearchBar and YearSelector,  
 which are fixed on the screen and must not re-render during text input
 
 
