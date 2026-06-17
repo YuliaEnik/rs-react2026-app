@@ -112,11 +112,16 @@
 
 
 # Explanatory Note
+
+
 To ensure maximum performance, I applied targeted optimization. Mindless wrapping of absolutely all elements in React.memo and useCallback (premature optimization) in React leads to excessive memory consumption for storing references and constant overhead from shallow prop comparisons.
+
+
 ## 1. Why useCallback was omitted for certain functions:
 - **handleSortFieldChange** and **handleSortOrderToggle**: these functions are passed directly to native HTML elements (<select> and <button>). Native tags do not have memoization mechanisms, and the stability of reference links does not matter to them. Using useCallback here would run in vain, needlessly putting load on the CPU.
 - **handleColumnToggle** and **handleModalToggle**: these are passed to the ColumnModal component. Since the modal component itself is not memoized (reasons specified below), stabilizing the references for these functions is pointless.
 - **Note**: I kept useCallback strictly for handleSearch and handleYearChange because they are passed to the memoized controls SearchBar and YearSelector, which are fixed on the screen and must not re-render during text input.
+
 
 ## 2. Why ColumnModal and DataTable were NOT wrapped in React.memo:
 Shallow prop comparison is a computational operation itself. Wrapping components with frequently changing data or components that are already protected at the parent level in React.memo is inefficient.
