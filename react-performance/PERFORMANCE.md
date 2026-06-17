@@ -123,18 +123,30 @@ To ensure maximum performance, I applied targeted optimization. Mindless wrappin
 Native tags do not have memoization mechanisms, and the stability of reference links does not matter to them. 
 Using useCallback here would run in vain, needlessly putting load on the CPU
 
+
+
 - **handleColumnToggle** and **handleModalToggle**: these are passed to the ColumnModal component. 
 Since the modal component itself is not memoized (reasons specified below), stabilizing the references for these functions is pointless
+
+
 
 - **Note**: I kept useCallback strictly for handleSearch and handleYearChange because they are passed to the memoized controls SearchBar and YearSelector,
 which are fixed on the screen and must not re-render during text input
 
 
+
+
 ## 2. Why ColumnModal and DataTable were NOT wrapped in React.memo:
+
+
 
 Shallow prop comparison is a computational operation itself. Wrapping components with frequently changing data or components that are already protected at the parent level in React.memo is inefficient.
 
+
+
 ### ColumnModal
+
+
 
 In its closed state, the component returns null and renders nothing. 
 In its open state, the user clicks checkboxes, and the selectedColumns array is guaranteed to change with every single click. 
@@ -142,7 +154,11 @@ The modal must re-render to display the checkmarks. If I added React.memo,
 React would waste time checking props on every click, seeing they changed, and triggering the re-render anyway. 
 Memoization would only slow down the process.
 
+
+
 ### DataTable
+
+
 
 This component is located inside the CountryCard. I have already wrapped the parent CountryCard in React.memo. 
 If the data for a specific country and the selected year have not changed, CountryCard does not re-render at all. 
