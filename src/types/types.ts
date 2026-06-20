@@ -20,7 +20,7 @@ export interface CardListProps {
   repos: IData[] | null;
   error: string | null;
   searchQuery: string;
-  onCardClick: (id: number) => void;
+  onCardClick?: (id: number) => void;
 }
 
 export interface ICheckbox {

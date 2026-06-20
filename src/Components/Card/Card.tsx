@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import type { CardState, IData } from "../../types/types";
 import { TEXT } from "../../constants/text";

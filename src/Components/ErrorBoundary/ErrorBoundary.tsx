@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { TEXT } from "../../constants/text";
 

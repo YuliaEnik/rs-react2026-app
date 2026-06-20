@@ -1,4 +1,4 @@
-import { type JSX, useMemo } from "react";
+/* import { type JSX, useMemo } from "react";
 import { useNavigate, Outlet } from "@tanstack/react-router";
 import { Route } from "../../routes/catalog/route";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
@@ -80,3 +80,4 @@ function HomePage(): JSX.Element {
 }
 
 export default HomePage;
+ */

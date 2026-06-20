@@ -1,4 +1,6 @@
+"use client";
 import React from "react";
+import Link from "next/link";
 import Card from "../Card/Card";
 import SkeletonCard from "../Skeleton/Skeleton";
 import type { CardListProps, IData } from "../../types/types";
@@ -38,9 +40,22 @@ const CardList: React.FC<CardListProps> = ({
         </div>
       )}
 
-      {repos?.map((cardData: IData) => (
-        <Card {...cardData} key={cardData.id} onClick={onCardClick} />
-      ))}
+      {repos?.map((cardData: IData) => {
+        if (onCardClick) {
+          return (
+            <Card {...cardData} key={cardData.id} onClick={onCardClick} />
+          );
+        }
+       return (
+          <Link 
+            href={`/${cardData.id}`} 
+            key={cardData.id}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Card {...cardData} onClick={() => {}} />
+          </Link>
+        );
+      })}
     </ul>
   );
 };

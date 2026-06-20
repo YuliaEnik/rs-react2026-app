@@ -1,6 +1,8 @@
-import { Link } from "@tanstack/react-router";
-import "./NotFoundPage.scss";
+
+import Link from "next/link";
 import { TEXT } from "../../constants/text";
+import "./NotFoundPage.scss";
+
 
 const NotFoundPage = () => {
   const { notFound } = TEXT.pages;
@@ -10,7 +12,7 @@ const NotFoundPage = () => {
         <h1>{notFound.heading}</h1>
         <h2>{notFound.subheading}</h2>
         <p>{notFound.message}</p>
-        <Link to="/catalog" className="home-link">
+        <Link href="/" className="home-link">
           {notFound.backLink}
         </Link>
       </div>

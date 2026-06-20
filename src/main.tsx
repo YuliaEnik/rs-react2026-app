@@ -1,4 +1,4 @@
-import { createRoot } from "react-dom/client";
+/* import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
@@ -32,3 +32,4 @@ createRoot(document.getElementById("root")!).render(
     </ThemeProvider>
   </React.StrictMode>,
 );
+ */

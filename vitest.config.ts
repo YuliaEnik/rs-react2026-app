@@ -1,27 +1,20 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
-import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import path from "path";
 
 export default defineConfig({
-  plugins: [!process.env.VITEST && tanstackRouter(), react()].filter(Boolean),
-  base: "/",
-  server: {
-    port: 5173,
-    proxy: {
-      "/api": {
-        target: "https://openaccess-api.clevelandart.org",
-        changeOrigin: true,
-      },
-    },
-  },
+  plugins: [react()],
   test: {
     globals: true,
     environment: "jsdom",
     setupFiles: "./src/setupTests.ts",
+    alias: {
+      "@": path.resolve(__dirname, "./"),
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["src/**/*.{js,jsx,ts,tsx}"],
+      include: ["src/**/*.{js,jsx,ts,tsx}", "app/**/*.{js,jsx,ts,tsx}"],
       exclude: [
         "src/**/*.test.{js,jsx,ts,tsx}",
         "src/**/*.spec.{js,jsx,ts,tsx}",

@@ -47,6 +47,7 @@
   gap: var(--spacing-m);
   border-radius: var(--border-radius);
   width: 100%;
+  height: max-content;
 
   &:hover {
     box-shadow: var(--box-shadow-hover);
@@ -74,5 +75,6 @@
 @media (max-width: 620px) {
   .modal-page {
     width: 100%;
+    order: -1;
   }
 }

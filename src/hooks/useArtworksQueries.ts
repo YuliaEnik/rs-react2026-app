@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { PAGINATION } from "../constants/numbers";
 import { ERROR_MESSAGES } from "../constants/text";
 import type { IData } from "../types/types";
@@ -9,7 +8,7 @@ interface IFetchResponse {
   total: number;
 }
 
-const fetchArtworksQueryFn = async (
+export const fetchArtworksQueryFn = async (
   search: string,
   page: number,
 ): Promise<IFetchResponse> => {
@@ -18,18 +17,40 @@ const fetchArtworksQueryFn = async (
   const skip = (page - 1) * limit;
   const fieldsParam = "id,title,creators,images,creation_date,description";
 
+  const baseUrl = "https://openaccess-api.clevelandart.org/api/artworks";
+
   const url = query
-    ? `/api/artworks?q=${encodeURIComponent(query)}&has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`
-    : `/api/artworks?has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`;
+    ? `${baseUrl}?q=${encodeURIComponent(query)}&has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`
+    : `${baseUrl}?has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`;
 
-  const res = await fetch(url);
+ const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+      "Host": "openaccess-api.clevelandart.org",
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    },
+    cache: "no-store"
+  });
 
-  if (!res.ok) {
+  const contentType = res.headers.get("content-type");
+  if (!res.ok || !contentType || !contentType.includes("application/json")) {
+    const textError = await res.text();
+
+    console.error("--- CMA API ERROR DETECTED ---");
+    console.error("Status:", res.status);
+    console.error("Content-Type:", contentType);
+    console.error("HTML Snippet:", textError.substring(0, 100));
+    console.error("--------------------------------");
+    
+    throw new Error(`CMA API returned invalid content type: ${contentType}`);
+  }
+/*   if (!res.ok) {
     if (res.status === 404) throw new Error(ERROR_MESSAGES.API_NOT_FOUND);
     if (res.status === 429) throw new Error(ERROR_MESSAGES.API_TOO_MANY);
     if (res.status >= 500) throw new Error(ERROR_MESSAGES.API_SERVER_ERROR);
     throw new Error(`${ERROR_MESSAGES.API_FAILED} ${res.status}`);
-  }
+  } */
 
   const data = await res.json();
   const results = data.data || [];
@@ -41,26 +62,12 @@ const fetchArtworksQueryFn = async (
   };
 };
 
-export const useGetArtworks = (search: string, page: number) => {
-  return useQuery({
-    queryKey: ["artworks", search, page],
-    queryFn: () => fetchArtworksQueryFn(search, page),
-  });
-};
-
 export const fetchArtworkByIdQueryFn = async (id: string): Promise<IData> => {
-  const res = await fetch(`/api/artworks/${id}`);
+
+  const res = await fetch(`https://clevelandart.org/${id}`);
   if (!res.ok) {
     throw new Error(ERROR_MESSAGES.API_NOT_FOUND);
   }
   const json: { data?: IData } & IData = await res.json();
   return json.data || json;
-};
-
-export const useGetArtworkById = (id: string | undefined) => {
-  return useQuery({
-    queryKey: ["artwork", id],
-    queryFn: () => fetchArtworkByIdQueryFn(id!),
-    enabled: !!id,
-  });
 };
