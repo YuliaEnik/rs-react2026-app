@@ -12,7 +12,6 @@ export default async function CatalogData({
   searchQuery,
   currentPage,
 }: CatalogDataProps) {
-
   return (
     <CardList
       loading={false}

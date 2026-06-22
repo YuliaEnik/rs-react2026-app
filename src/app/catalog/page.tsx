@@ -22,13 +22,13 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const searchQuery = params.query || "";
   const currentPage = Number(params.page) || 1;
-   const selectedId = params.id || "";
+  const selectedId = params.id || "";
 
   const result = await fetchArtworksQueryFn(searchQuery, currentPage);
   const totalPages = Math.ceil(
     (result?.total || 0) / PAGINATION.CARDS_PER_PAGE,
   );
- 
+
   return (
     /*  <ErrorBoundary> */
     <section className="home-page">
@@ -39,32 +39,41 @@ export default async function CatalogPage({ searchParams }: PageProps) {
       >
         <div className="cards-content">
           <CatalogData
-          data={result.data || []} 
-           searchQuery={searchQuery} 
-           currentPage={currentPage} />
+            data={result.data || []}
+            searchQuery={searchQuery}
+            currentPage={currentPage}
+          />
 
-            {selectedId && (
-       <div className={"modal-page active"} /* onClick={closeDetails} */>
-      <div
-        className="modal-content"
-        /* onClick={(event) => event.stopPropagation()} */
-      >
-      <Suspense 
-        key={selectedId}
-        fallback={
-          <ul
-            style={{ listStyle: "none", padding: 0, margin: 0, width: "100%" }}
-          >
-            <SkeletonCard />
-          </ul>
-        }
-      >
-        <DetailsPage id={selectedId} />
-      </Suspense>
-    </div>
-  </div>
-)}
-
+          {selectedId && (
+            <div className={"modal-page active"} /* onClick={closeDetails} */>
+              <div
+                className="modal-content"
+                /* onClick={(event) => event.stopPropagation()} */
+              >
+                <Suspense
+                  key={selectedId}
+                  fallback={
+                    <ul
+                      style={{
+                        listStyle: "none",
+                        padding: 0,
+                        margin: 0,
+                        width: "100%",
+                      }}
+                    >
+                      <SkeletonCard />
+                    </ul>
+                  }
+                >
+                  <DetailsPage
+                    id={selectedId}
+                    currentPage={String(currentPage)}
+                    searchQuery={searchQuery}
+                  />
+                </Suspense>
+              </div>
+            </div>
+          )}
         </div>
       </CatalogClientHandler>
     </section>

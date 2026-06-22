@@ -1,6 +1,6 @@
 const nextConfig = {
-  reactStrictMode: true, 
-  distDir: './dist',
+  reactStrictMode: true,
+  distDir: "./dist",
 
   images: {
     unoptimized: true,

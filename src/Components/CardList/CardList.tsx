@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import Card from "../Card/Card";
 import SkeletonCard from "../Skeleton/Skeleton";
 import type { CardListProps, IData } from "../../types/types";
 import { TEXT } from "../../constants/text";
 import { PAGINATION } from "../../constants/numbers";
 import "./CardList.scss";
+import { handleSelectAction } from "../../app/catalog/actions";
 
 const CardList: React.FC<CardListProps> = ({
   loading,
@@ -17,10 +17,10 @@ const CardList: React.FC<CardListProps> = ({
   onCardClick,
 }) => {
   const searchParams = useSearchParams();
+  const currentPage = searchParams?.get("page") || "1";
   const shouldShowSkeletons = loading && !repos;
   const hasNoResults = repos?.length === 0 && !loading && searchQuery !== "";
   const showError = !!error && !loading;
-  
 
   return (
     <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()}>
@@ -45,22 +45,26 @@ const CardList: React.FC<CardListProps> = ({
 
       {repos?.map((cardData: IData) => {
         if (onCardClick) {
-          return (
-            <Card {...cardData} key={cardData.id} onClick={onCardClick} />
-          );
+          return <Card {...cardData} key={cardData.id} onClick={onCardClick} />;
         }
 
         const params = new URLSearchParams(searchParams?.toString() || "");
         params.set("id", String(cardData.id));
 
-       return (
-          <Link 
-            href={`/catalog?${params.toString()}`}
+        return (
+          <form
+            action={handleSelectAction}
             key={cardData.id}
-            style={{ textDecoration: "none", color: "inherit" }}
+            className="cardlist-form"
           >
-            <Card {...cardData} onClick={() => {}} />
-          </Link>
+            <input type="hidden" name="id" value={cardData.id} />
+            <input type="hidden" name="page" value={currentPage} />
+            <input type="hidden" name="query" value={searchQuery} />
+
+            <button type="submit" className="cardlist-btn">
+              <Card {...cardData} onClick={() => {}} />
+            </button>
+          </form>
         );
       })}
     </ul>

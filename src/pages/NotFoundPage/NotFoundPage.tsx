@@ -1,8 +1,6 @@
-
 import Link from "next/link";
 import { TEXT } from "../../constants/text";
 import "./NotFoundPage.scss";
-
 
 const NotFoundPage = () => {
   const { notFound } = TEXT.pages;

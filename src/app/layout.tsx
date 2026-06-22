@@ -1,9 +1,8 @@
 import React from "react";
-import Navigation from "../Components/Navigate/Navigate"; 
+import Navigation from "../Components/Navigate/Navigate";
 import Footer from "../Components/Footer/Footer";
 import Providers from "./providers";
 import "./../index.css";
-
 
 export default function RootLayout({
   children,
@@ -31,9 +30,7 @@ export default function RootLayout({
           <header className="header">
             <Navigation />
           </header>
-          <main className="main">
-            {children}
-          </main>
+          <main className="main">{children}</main>
           <footer>
             <Footer />
           </footer>

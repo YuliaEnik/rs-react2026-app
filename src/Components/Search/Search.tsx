@@ -1,44 +1,43 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import type { SearchProps } from "../../types/types";
 import { TEXT } from "../../constants/text";
 import "./Search.scss";
+import { useSearchParams } from "next/navigation";
+import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { handleSearchAction } from "../../app/catalog/actions";
 
-const Search: React.FC<SearchProps> = ({ onSearch }) => {
+const Search: React.FC<SearchProps> = () => {
+  const searchParams = useSearchParams();
+  const queryFromUrl = searchParams?.get("query") || "";
 
-  const [value, setValue] = useState("");
+  const [value, setValue] = useLocalStorage(
+    STORAGE_KEYS.SEARCH_QUERY,
+    queryFromUrl,
+  );
 
-  const handleSearch = () => {
-    const trimmedValue = value.trim();
-    if (onSearch) {
-      onSearch(trimmedValue);
+  useEffect(() => {
+    if (queryFromUrl !== value) {
+      setValue(queryFromUrl);
     }
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+  }, [queryFromUrl]);
 
   return (
     <span className="search-wrap">
       <div className="search">
-        <input
-          type="text"
-          name="text"
-          className="search-form_input"
-          placeholder={TEXT.search.placeholder}
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
-        <button onClick={handleSearch} className="search-button"></button>
+        <form action={handleSearchAction} className="search">
+          <input
+            type="text"
+            name="query"
+            className="search-form_input"
+            placeholder={TEXT.search.placeholder}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          <button className="search-button"></button>
+        </form>
       </div>
     </span>
   );

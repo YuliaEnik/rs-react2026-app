@@ -5,18 +5,23 @@ import CloseButton from "./CloseButton";
 
 interface DetailsPageProps {
   id: string;
+  currentPage: string;
+  searchQuery: string;
 }
 
-export default async function DetailsPage({ id }: DetailsPageProps) {
-  
+export default async function DetailsPage({
+  id,
+  currentPage,
+  searchQuery,
+}: DetailsPageProps) {
   const card = await fetchArtworkByIdQueryFn(id);
 
   return (
-<>
-        <div className="modal-header">
-          <CloseButton />
-        </div>
-        <Card {...card} isSelected={true} />
-</>
+    <>
+      <div className="modal-header">
+        <CloseButton currentPage={currentPage} searchQuery={searchQuery} />
+      </div>
+      <Card {...card} isSelected={true} />
+    </>
   );
 }

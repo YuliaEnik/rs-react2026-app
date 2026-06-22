@@ -1,21 +1,25 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { handleCloseAction } from "../../catalog/actions";
 import "./../../../pages/DetailsPage/DetailsPage.scss";
 
-export default function CloseButton() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  
-  const handleClose = () => {
-    const params = new URLSearchParams(searchParams?.toString() || "");
-    params.delete("id");
-    router.push(`?${params.toString()}`);
-  };
-  
+interface CloseButtonProps {
+  currentPage: string;
+  searchQuery: string;
+}
+
+export default function CloseButton({
+  currentPage,
+  searchQuery,
+}: CloseButtonProps) {
   return (
-    <div className="btn-modal" onClick={handleClose}>
-      <p className="btn-modal__img">✕</p>
-    </div>
+    <form action={handleCloseAction}>
+      <input type="hidden" name="page" value={currentPage} />
+      <input type="hidden" name="query" value={searchQuery} />
+
+      <button type="submit" className="btn-modal">
+        <p className="btn-modal__img">✕</p>
+      </button>
+    </form>
   );
 }

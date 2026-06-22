@@ -1,7 +1,6 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import DetailsPage from "./DetailsPage";
+import DetailsPage from "../../app/catalog/[id]/page";
 
 const mockCard = {
   id: 1,
@@ -11,23 +10,12 @@ const mockCard = {
   description: "Test description",
 };
 
-const mockNavigate = vi.fn();
+const mockFetchArtworkById = vi.fn();
+vi.mock("../../../hooks/useArtworksQueries", () => ({
+  fetchArtworkByIdQueryFn: (id: string) => mockFetchArtworkById(id),
+}));
 
-vi.mock("@tanstack/react-router", () => {
-  const mockRouteInstance = {
-    useParams: () => ({ id: "1" }),
-    useSearch: () => ({ page: 1 }),
-  };
-
-  return {
-    useNavigate: () => mockNavigate,
-    useParams: () => ({ id: "1" }),
-    createFileRoute: () => () => mockRouteInstance,
-    Route: mockRouteInstance,
-  };
-});
-
-vi.mock("../../Components/Card/Card", () => ({
+vi.mock("../../../Components/Card/Card", () => ({
   default: vi.fn(({ title, isSelected }) => (
     <div data-testid="mocked-card" data-selected={isSelected}>
       <h3>{title}</h3>
@@ -35,73 +23,31 @@ vi.mock("../../Components/Card/Card", () => ({
   )),
 }));
 
-const mockUseGetArtworkById = vi.fn();
-vi.mock("../../hooks/useArtworksQueries", () => ({
-  useGetArtworkById: () => mockUseGetArtworkById(),
+vi.mock("./CloseButton", () => ({
+  default: () => <button data-testid="mock-close-button">✕</button>,
 }));
 
-describe("DetailsPage Component Tests", () => {
-  let testQueryClient: QueryClient;
-
+describe("DetailsPage Server Component Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    testQueryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
   });
 
-  const renderWithQuery = (ui: React.ReactElement) => {
-    return render(
-      <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>,
-    );
-  };
+  it("successfully fetches data on server and renders artwork detail panel", async () => {
 
-  it("renders card when data exists and is loaded", () => {
-    mockUseGetArtworkById.mockReturnValue({
-      data: mockCard,
-      isLoading: false,
-      isFetching: false,
-      error: null,
+    mockFetchArtworkById.mockResolvedValue(mockCard);
+
+    const ResolvedDetailsPage = await DetailsPage({
+      id: "1",
+      currentPage: "1",
+      searchQuery: "sun",
     });
 
-    renderWithQuery(<DetailsPage />);
+    render(ResolvedDetailsPage);
+
+    expect(mockFetchArtworkById).toHaveBeenCalledWith("1");
 
     expect(screen.getByTestId("mocked-card")).toBeInTheDocument();
     expect(screen.getByText("Test Artwork 1")).toBeInTheDocument();
-    expect(screen.getByText("X")).toBeInTheDocument();
-  });
-
-  it("calls navigate to /catalog when clicking close button", () => {
-    mockUseGetArtworkById.mockReturnValue({
-      data: mockCard,
-      isLoading: false,
-      isFetching: false,
-      error: null,
-    });
-
-    renderWithQuery(<DetailsPage />);
-
-    const closeButton = screen.getByText("X");
-    fireEvent.click(closeButton);
-
-    expect(mockNavigate).toHaveBeenCalledWith({ to: "/catalog" });
-  });
-
-  it("calls navigate to /catalog when clicking backdrop (outer overlay)", () => {
-    mockUseGetArtworkById.mockReturnValue({
-      data: mockCard,
-      isLoading: false,
-      isFetching: false,
-      error: null,
-    });
-
-    const { container } = renderWithQuery(<DetailsPage />);
-
-    const backdrop = container.firstChild;
-    if (backdrop) {
-      fireEvent.click(backdrop);
-    }
-
-    expect(mockNavigate).toHaveBeenCalledWith({ to: "/catalog" });
+    expect(screen.getByTestId("mock-close-button")).toBeInTheDocument();
   });
 });

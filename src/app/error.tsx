@@ -14,7 +14,10 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div className="error-boundary" style={{ padding: "40px", textAlign: "center" }}>
+    <div
+      className="error-boundary"
+      style={{ padding: "40px", textAlign: "center" }}
+    >
       <h2>{TEXT.errorBoundary.heading}</h2>
       <p>{error.message || TEXT.errorBoundary.fallbackMessage}</p>
       <button onClick={() => reset()}>{TEXT.catalog.tryAgainBtn}</button>

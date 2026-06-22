@@ -23,14 +23,15 @@ export const fetchArtworksQueryFn = async (
     ? `${baseUrl}?q=${encodeURIComponent(query)}&has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`
     : `${baseUrl}?has_image=1&limit=${limit}&skip=${skip}&fields=${fieldsParam}`;
 
- const res = await fetch(url, {
+  const res = await fetch(url, {
     method: "GET",
     headers: {
-      "Accept": "application/json",
-      "Host": "openaccess-api.clevelandart.org",
-      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      Accept: "application/json",
+      Host: "openaccess-api.clevelandart.org",
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     },
-    cache: "no-store"
+    cache: "no-store",
   });
 
   const contentType = res.headers.get("content-type");
@@ -42,10 +43,10 @@ export const fetchArtworksQueryFn = async (
     console.error("Content-Type:", contentType);
     console.error("HTML Snippet:", textError.substring(0, 100));
     console.error("--------------------------------");
-    
+
     throw new Error(`CMA API returned invalid content type: ${contentType}`);
   }
-/*   if (!res.ok) {
+  /*   if (!res.ok) {
     if (res.status === 404) throw new Error(ERROR_MESSAGES.API_NOT_FOUND);
     if (res.status === 429) throw new Error(ERROR_MESSAGES.API_TOO_MANY);
     if (res.status >= 500) throw new Error(ERROR_MESSAGES.API_SERVER_ERROR);
@@ -63,8 +64,9 @@ export const fetchArtworksQueryFn = async (
 };
 
 export const fetchArtworkByIdQueryFn = async (id: string): Promise<IData> => {
-
-  const res = await fetch(`https://openaccess-api.clevelandart.org/api/artworks/${id}`);
+  const res = await fetch(
+    `https://openaccess-api.clevelandart.org/api/artworks/${id}`,
+  );
   if (!res.ok) {
     throw new Error(ERROR_MESSAGES.API_NOT_FOUND);
   }

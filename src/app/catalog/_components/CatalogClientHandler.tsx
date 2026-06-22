@@ -57,11 +57,11 @@ export default function CatalogClientHandler({
     <>
       <Search onSearch={handleSearch} />
       {children}
-        <Pagination
-          page={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <SelectionFlyout />
     </>
   );
