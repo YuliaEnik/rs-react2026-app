@@ -1,7 +1,9 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import Navigation from "./Navigate";
 import { ThemeContext } from "../../themeContext/ThemeContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../../queryClient";
 
 const mockReplace = vi.fn();
 const mockRefresh = vi.fn();
@@ -21,15 +23,7 @@ vi.mock("next-intl", () => ({
 }));
 
 vi.mock("../../i18n/navigation", () => ({
-  Link: ({
-    children,
-    href,
-    className,
-  }: {
-    children: React.ReactNode;
-    href: string;
-    className?: string;
-  }) => (
+  Link: ({ children, href, className }: { children: React.ReactNode; href: string; className?: string }) => (
     <a href={href} className={className}>
       {children}
     </a>
@@ -47,21 +41,29 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+vi.mock("../../queryClient", () => ({
+  queryClient: {
+    invalidateQueries: vi.fn(() => Promise.resolve()),
+  },
+}));
+
 describe("Navigation Component", () => {
+  let testQueryClient: QueryClient;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    testQueryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
   });
 
-  const renderComponent = (
-    themeValue: "light" | "dark" = "light",
-    toggleThemeMock = vi.fn(),
-  ) => {
+  const renderComponent = (themeValue: "light" | "dark" = "light", toggleThemeMock = vi.fn()) => {
     return render(
-      <ThemeContext.Provider
-        value={{ theme: themeValue, toggleTheme: toggleThemeMock }}
-      >
-        <Navigation />
-      </ThemeContext.Provider>,
+      <QueryClientProvider client={testQueryClient}>
+        <ThemeContext.Provider value={{ theme: themeValue, toggleTheme: toggleThemeMock }}>
+          <Navigation />
+        </ThemeContext.Provider>
+      </QueryClientProvider>
     );
   };
 
@@ -96,13 +98,16 @@ describe("Navigation Component", () => {
     expect(toggleThemeMock).toHaveBeenCalledTimes(1);
   });
 
-  it("should call router.refresh when refresh button is clicked", () => {
+  it("should call router.refresh when refresh button is clicked", async () => {
     renderComponent();
 
     const refreshButton = screen.getByRole("button", { name: "Обновить" });
     fireEvent.click(refreshButton);
 
-    expect(mockRefresh).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(queryClient.invalidateQueries).toHaveBeenCalledTimes(1);
+      expect(mockRefresh).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("should handle locale change selection correctly", () => {
@@ -111,8 +116,6 @@ describe("Navigation Component", () => {
     const select = screen.getByRole("combobox");
     fireEvent.change(select, { target: { value: "en" } });
 
-    expect(mockReplace).toHaveBeenCalledWith("/about?page=1&query=test", {
-      locale: "en",
-    });
+    expect(mockReplace).toHaveBeenCalledWith("/about?page=1&query=test", { locale: "en" });
   });
 });

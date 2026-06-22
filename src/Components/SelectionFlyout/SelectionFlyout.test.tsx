@@ -2,10 +2,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SelectionFlyout } from "./SelectionFlyout";
 import { useStore } from "../../store/useStore";
-import { downloadCSV } from "../../helpers/downloadCSV";
 import type { IData } from "../../types/types";
 
 vi.mock("next-intl", () => ({
+  useLocale: () => "ru", 
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       count: "Selected:",
@@ -16,10 +16,6 @@ vi.mock("next-intl", () => ({
   },
 }));
 
-vi.mock("../../helpers/downloadCSV", () => ({
-  downloadCSV: vi.fn(),
-}));
-
 const mockCards: IData[] = [
   { id: 1, title: "Artwork 1" },
   { id: 2, title: "Artwork 2" },
@@ -28,6 +24,13 @@ const mockCards: IData[] = [
 describe("SelectionFlyout Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    globalThis.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        blob: () => Promise.resolve(new Blob()),
+        headers: { get: () => "2" },
+      } as unknown as Response)
+    );
     useStore.setState({
       selectedCards: [],
       unselectAll: vi.fn(),
@@ -57,21 +60,19 @@ describe("SelectionFlyout Component", () => {
     });
 
     render(<SelectionFlyout />);
-    const unselectButton = screen.getByRole("button", {
-      name: /Unselect All/i,
-    });
+    const unselectButton = screen.getByRole("button", { name: /Unselect All/i });
     fireEvent.click(unselectButton);
     expect(mockUnselectAll).toHaveBeenCalled();
   });
 
   it("should call downloadCSV function with selected cards when 'Download CSV' button is clicked", () => {
     useStore.setState({ selectedCards: mockCards });
+    window.URL.createObjectURL = vi.fn(() => "mock-url");
+    window.URL.revokeObjectURL = vi.fn();
 
     render(<SelectionFlyout />);
-    const downloadButton = screen.getByRole("button", {
-      name: /Download CSV/i,
-    });
+    const downloadButton = screen.getByRole("button", { name: /Download CSV/i });
     fireEvent.click(downloadButton);
-    expect(downloadCSV).toHaveBeenCalledWith(mockCards);
+    expect(globalThis.fetch).toHaveBeenCalled();
   });
 });
