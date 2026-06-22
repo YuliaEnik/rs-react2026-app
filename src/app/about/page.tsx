@@ -1,8 +1,8 @@
 import type { JSX } from "react";
 import { TEXT } from "../../constants/text";
-import "./AboutUs.scss";
+import "./About.scss";
 
-const AboutUs = (): JSX.Element => {
+const About = (): JSX.Element => {
   const { about } = TEXT.pages;
 
   return (
@@ -37,4 +37,4 @@ const AboutUs = (): JSX.Element => {
   );
 };
 
-export { AboutUs };
+export default About;

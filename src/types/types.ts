@@ -20,6 +20,7 @@ export interface CardListProps {
   repos: IData[] | null;
   error: string | null;
   searchQuery: string;
+  currentPage?: number;
   onCardClick?: (id: number) => void;
 }
 

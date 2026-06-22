@@ -1,5 +1,4 @@
 "use client"; 
-
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppTheme } from "../../themeContext/ThemeContext";
@@ -7,7 +6,8 @@ import { TEXT } from "../../constants/text";
 import "./Navigate.scss";
 
 function Navigation() {
-  const { theme, toggleTheme } = useAppTheme();
+
+  const { toggleTheme } = useAppTheme();
   const { navigation } = TEXT;
   
   const pathname = usePathname();
@@ -19,8 +19,8 @@ function Navigation() {
 
   const getLinkClass = (path: string) => {
     if (!pathname) return "nav-link";
-    if (path === "/catalog") {
-      return pathname === "/" || pathname.startsWith("/catalog") 
+    if (path === "/") {
+      return pathname === "/" || pathname.startsWith("/") 
         ? "nav-link nav-link_active" 
         : "nav-link";
     }
@@ -31,8 +31,8 @@ function Navigation() {
     <nav className="nav">
       <div className="nav-section">
         <Link
-          href="/catalog"
-          className={getLinkClass("/catalog")}
+          href="/"
+          className={getLinkClass("/")}
         >
           {navigation.home}
         </Link>
@@ -44,15 +44,16 @@ function Navigation() {
         </Link>
       </div>
       <div className="nav-section">
-
+ 
         <button 
           onClick={toggleTheme} 
-          className="nav-link btn" 
+          className="nav-link btn theme-toggle-btn" 
           type="button"
-          suppressHydrationWarning={true}
         >
-          {theme === "light" ? TEXT.theme.dark : TEXT.theme.light}
+          <span className="text-dark">{TEXT.theme.dark}</span>
+          <span className="text-light">{TEXT.theme.light}</span>
         </button>
+        
         <button
           className="nav-link btn"
           onClick={handleRefresh}

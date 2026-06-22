@@ -40,3 +40,21 @@
     border: 1px solid var(--color-primary-dark);
   }
 }
+
+.theme-toggle-btn {
+  span {
+    display: none;
+  }
+}
+
+html[data-theme="dark"] {
+  .theme-toggle-btn .text-light {
+    display: inline;
+  }
+}
+
+html[data-theme="light"] {
+  .theme-toggle-btn .text-dark {
+    display: inline;
+  }
+}

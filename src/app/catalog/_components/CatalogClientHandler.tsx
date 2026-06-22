@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import Search from "../../Components/Search/Search";
-import Pagination from "../../Components/Pagination/Pagination";
+import Search from "../../../Components/Search/Search";
+import Pagination from "../../../Components/Pagination/Pagination";
 import dynamic from "next/dynamic";
 
 const SelectionFlyout = dynamic(
   () =>
-    import("../../Components/SelectionFlyout/SelectionFlyout").then(
+    import("../../../Components/SelectionFlyout/SelectionFlyout").then(
       (mod) => mod.SelectionFlyout,
     ),
   { ssr: false },
@@ -17,12 +17,14 @@ interface HandlerProps {
   initialQuery: string;
   currentPage: number;
   totalPages: number;
+  children: React.ReactNode;
 }
 
 export default function CatalogClientHandler({
   initialQuery,
   currentPage,
   totalPages,
+  children,
 }: HandlerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -39,7 +41,7 @@ export default function CatalogClientHandler({
 
     params.set("page", String(page));
 
-    router.push(`/catalog?${params.toString()}`);
+    router.push(`/?${params.toString()}`);
   };
 
   const handleSearch = (searchValue: string) => {
@@ -54,14 +56,12 @@ export default function CatalogClientHandler({
   return (
     <>
       <Search onSearch={handleSearch} />
-
-      {totalPages > 1 && (
+      {children}
         <Pagination
           page={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />
-      )}
       <SelectionFlyout />
     </>
   );

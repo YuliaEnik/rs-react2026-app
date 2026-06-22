@@ -64,7 +64,7 @@ export const fetchArtworksQueryFn = async (
 
 export const fetchArtworkByIdQueryFn = async (id: string): Promise<IData> => {
 
-  const res = await fetch(`https://clevelandart.org/${id}`);
+  const res = await fetch(`https://openaccess-api.clevelandart.org/api/artworks/${id}`);
   if (!res.ok) {
     throw new Error(ERROR_MESSAGES.API_NOT_FOUND);
   }

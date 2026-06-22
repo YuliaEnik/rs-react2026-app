@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Card from "../Card/Card";
 import SkeletonCard from "../Skeleton/Skeleton";
@@ -15,9 +16,11 @@ const CardList: React.FC<CardListProps> = ({
   searchQuery,
   onCardClick,
 }) => {
+  const searchParams = useSearchParams();
   const shouldShowSkeletons = loading && !repos;
   const hasNoResults = repos?.length === 0 && !loading && searchQuery !== "";
   const showError = !!error && !loading;
+  
 
   return (
     <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()}>
@@ -46,9 +49,13 @@ const CardList: React.FC<CardListProps> = ({
             <Card {...cardData} key={cardData.id} onClick={onCardClick} />
           );
         }
+
+        const params = new URLSearchParams(searchParams?.toString() || "");
+        params.set("id", String(cardData.id));
+
        return (
           <Link 
-            href={`/${cardData.id}`} 
+            href={`/catalog?${params.toString()}`}
             key={cardData.id}
             style={{ textDecoration: "none", color: "inherit" }}
           >

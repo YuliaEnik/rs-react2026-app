@@ -1,14 +1,9 @@
 import React from "react";
 import Navigation from "../Components/Navigate/Navigate"; 
-import type { Metadata } from "next";
 import Footer from "../Components/Footer/Footer";
 import Providers from "./providers";
 import "./../index.css";
 
-export const metadata: Metadata = {
-  title: "Art App",
-  description: "Art App",
-};
 
 export default function RootLayout({
   children,
@@ -16,7 +11,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem("app_theme") || "dark"; 
+                  document.documentElement.setAttribute("data-theme", theme);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         <Providers>
           <header className="header">

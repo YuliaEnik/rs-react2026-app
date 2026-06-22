@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+/* import { useNavigate } from "@tanstack/react-router";
 import Card from "../../Components/Card/Card";
 import { Route } from "../../routes/catalog/$id";
 import SkeletonCard from "../../Components/Skeleton/Skeleton";
@@ -52,3 +52,4 @@ const DetailsPage = () => {
 };
 
 export default DetailsPage;
+ */
