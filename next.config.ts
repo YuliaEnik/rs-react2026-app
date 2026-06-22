@@ -4,6 +4,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  pageExtensions: ["page.tsx", "page.ts", "page.jsx", "page.js", "tsx", "ts"],
+  
   images: {
     remotePatterns: [
       {
@@ -17,6 +19,14 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+  },
+
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.(test|spec)\.(ts|tsx)$/,
+      loader: "null-loader",
+    });
+    return config;
   },
 };
 
