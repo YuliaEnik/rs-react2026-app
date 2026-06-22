@@ -4,8 +4,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  pageExtensions: ["page.tsx", "page.ts", "page.jsx", "page.js", "tsx", "ts"],
-  
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
+
   images: {
     remotePatterns: [
       {
@@ -22,9 +22,10 @@ const nextConfig: NextConfig = {
   },
 
   webpack: (config) => {
+    config.productionBrowserSourceMaps = false;
     config.module.rules.push({
-      test: /\.(test|spec)\.(ts|tsx)$/,
-      loader: "null-loader",
+      test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
+      loader: "ignore-loader", 
     });
     return config;
   },
