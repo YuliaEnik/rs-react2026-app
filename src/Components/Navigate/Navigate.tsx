@@ -1,8 +1,11 @@
 "use client";
+import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter, usePathname } from "../../i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useAppTheme } from "../../themeContext/ThemeContext";
+import { useIsFetching } from "@tanstack/react-query";
+import { queryClient } from "../../queryClient";
 import "./Navigate.scss";
 
 function Navigation() {
@@ -14,6 +17,9 @@ function Navigation() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+
+  const isFetchingAll = useIsFetching();
+  const isFetching = isFetchingAll > 0;
 
   const handleLocaleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nextLocale = event.target.value;
@@ -32,14 +38,15 @@ function Navigation() {
   const getLinkClass = (path: string) => {
     if (!pathname) return "nav-link";
     if (path === "/") {
-      return pathname === "/" || pathname.startsWith("/")
+      return pathname === "/" || pathname === "/catalog"
         ? "nav-link nav-link_active"
         : "nav-link";
     }
     return pathname.startsWith(path) ? "nav-link nav-link_active" : "nav-link";
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries();
     router.refresh();
   };
 
@@ -63,8 +70,13 @@ function Navigation() {
           <span className="text-light">{t("theme.light")}</span>
         </button>
 
-        <button className="nav-link btn" onClick={handleRefresh} type="button">
-          {t("refresh.refresh")}
+        <button 
+          className="nav-link btn" 
+          onClick={handleRefresh} 
+          disabled={isFetching}
+          type="button"
+        >
+          {isFetching ? t("refresh.updating") : t("refresh.refresh")}
         </button>
 
         <select

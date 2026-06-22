@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useStore } from "../../store/useStore";
 import "./SelectionFlyout.scss";
 
@@ -9,12 +9,12 @@ export const SelectionFlyout: React.FC = () => {
   const selectedCards = useStore((state) => state.selectedCards);
   const unselectAll = useStore((state) => state.unselectAll);
   const t = useTranslations("selectionFlyout");
-
+  const currentLocale = useLocale();
   const count = selectedCards.length;
 
   const handleDownloadCSV = async () => {
     try {
-      const response = await fetch("/api/download-csv", {
+      const response = await fetch(`/${currentLocale}/api/download-csv`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedCards),
@@ -25,14 +25,17 @@ export const SelectionFlyout: React.FC = () => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = "selected_artworks.csv";
+        
+        const fileCount = response.headers.get("X-Total-Count") || String(count);
+        link.download = `${fileCount}_items.csv`;
+        
         document.body.appendChild(link);
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
       }
     } catch (error) {
-      console.error("Server CSV generation failed:", error);
+      console.error("Client fetch error during download:", error);
     }
   };
 
