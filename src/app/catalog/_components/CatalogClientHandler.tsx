@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import Search from "../../../Components/Search/Search";
 import Pagination from "../../../Components/Pagination/Pagination";
 import dynamic from "next/dynamic";
 
@@ -41,12 +40,7 @@ export default function CatalogClientHandler({
 
     params.set("page", String(page));
 
-    router.push(`/?${params.toString()}`);
-  };
-
-  const handleSearch = (searchValue: string) => {
-    if (searchValue === initialQuery) return;
-    updateUrl(searchValue, 1);
+    router.push(`/catalog?${params.toString()}`);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -55,7 +49,6 @@ export default function CatalogClientHandler({
 
   return (
     <>
-      <Search onSearch={handleSearch} />
       {children}
       <Pagination
         page={currentPage}

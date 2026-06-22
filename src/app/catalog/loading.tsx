@@ -5,12 +5,10 @@ import "../../pages/HomePage/HomePage.scss";
 
 export default function CatalogLoading() {
   return (
-    <div className="cards-content">
-      <ul className="cards-wrapper">
-        {Array.from({ length: PAGINATION.CARDS_PER_PAGE }, (_, i) => (
-          <SkeletonCard key={i} />
-        ))}
-      </ul>
-    </div>
+    <ul className="cards-wrapper">
+      {Array.from({ length: PAGINATION.CARDS_PER_PAGE }, (_, i) => (
+        <SkeletonCard key={i} />
+      ))}
+    </ul>
   );
 }

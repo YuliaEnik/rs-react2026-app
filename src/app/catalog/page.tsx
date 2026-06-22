@@ -7,6 +7,8 @@ import DetailsPage from "./[id]/page";
 import SkeletonCard from "../../Components/Skeleton/Skeleton";
 import "./../../pages/DetailsPage/DetailsPage.scss";
 import "./../../pages/HomePage/HomePage.scss";
+import Search from "../../Components/Search/Search";
+import CatalogLoading from "./loading";
 
 export const dynamic = "force-dynamic";
 
@@ -24,32 +26,38 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   const currentPage = Number(params.page) || 1;
   const selectedId = params.id || "";
 
-  const result = await fetchArtworksQueryFn(searchQuery, currentPage);
+  const dataPromise = fetchArtworksQueryFn(searchQuery, currentPage);
+
+  const resultData = await dataPromise;
   const totalPages = Math.ceil(
-    (result?.total || 0) / PAGINATION.CARDS_PER_PAGE,
+    (resultData?.total || 0) / PAGINATION.CARDS_PER_PAGE,
   );
 
   return (
     /*  <ErrorBoundary> */
     <section className="home-page">
+      <Search />
+
       <CatalogClientHandler
         initialQuery={searchQuery}
         currentPage={currentPage}
         totalPages={totalPages}
       >
         <div className="cards-content">
-          <CatalogData
-            data={result.data || []}
-            searchQuery={searchQuery}
-            currentPage={currentPage}
-          />
+          <Suspense
+            key={`${searchQuery}-${currentPage}`}
+            fallback={<CatalogLoading />}
+          >
+            <CatalogData
+              data={resultData.data || []}
+              searchQuery={searchQuery}
+              currentPage={currentPage}
+            />
+          </Suspense>
 
           {selectedId && (
-            <div className={"modal-page active"} /* onClick={closeDetails} */>
-              <div
-                className="modal-content"
-                /* onClick={(event) => event.stopPropagation()} */
-              >
+            <div className={"modal-page active"}>
+              <div className="modal-content">
                 <Suspense
                   key={selectedId}
                   fallback={

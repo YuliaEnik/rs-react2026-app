@@ -3,7 +3,20 @@ const nextConfig = {
   distDir: "./dist",
 
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "openaccess-api.clevelandart.org",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "openaccess-cdn.clevelandart.org",
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
 };
 

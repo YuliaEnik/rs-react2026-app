@@ -33,7 +33,6 @@ describe("DetailsPage Server Component Tests", () => {
   });
 
   it("successfully fetches data on server and renders artwork detail panel", async () => {
-
     mockFetchArtworkById.mockResolvedValue(mockCard);
 
     const ResolvedDetailsPage = await DetailsPage({

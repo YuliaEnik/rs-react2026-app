@@ -13,7 +13,7 @@ export interface CardState {
 }
 
 export type SearchProps = {
-  onSearch: (value: string) => void;
+  onSearch?: (value: string) => void;
 };
 export interface CardListProps {
   loading: boolean;

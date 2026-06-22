@@ -4,6 +4,7 @@ import type { CardState, IData } from "../../types/types";
 import { TEXT } from "../../constants/text";
 import { useStore } from "../../store/useStore";
 import { Checkbox } from "../CheckBox/CheckBox";
+import Image from "next/image";
 import "./Card.scss";
 
 const Card: React.FC<IData> = (props: IData) => {
@@ -28,11 +29,16 @@ const Card: React.FC<IData> = (props: IData) => {
     <li className="card-wrapper" data-testid="card" onClick={handleClick}>
       <div className="card-image-box">
         {props.images?.web?.url && !imgError ? (
-          <img
+          <Image
             src={props.images.web.url}
+            fill
             alt={props.title}
             onError={() => setImgError(true)}
-            loading="lazy"
+            style={{
+              objectFit: "contain",
+              objectPosition: "center",
+            }}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className="image-placeholder">{TEXT.card.imageNotAvailable}</div>
