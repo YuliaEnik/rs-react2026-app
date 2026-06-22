@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
-import { TEXT } from "../constants/text";
+import { useTranslations } from "next-intl";
 
 interface ErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
-export default function GlobalError({ error, reset }: ErrorProps) {
+export default function Error({ error, reset }: ErrorProps) {
+  const t = useTranslations("errorBoundary");
+
   useEffect(() => {
     console.error("Next.js Server Error caught:", error);
   }, [error]);
@@ -18,9 +20,9 @@ export default function GlobalError({ error, reset }: ErrorProps) {
       className="error-boundary"
       style={{ padding: "40px", textAlign: "center" }}
     >
-      <h2>{TEXT.errorBoundary.heading}</h2>
-      <p>{error.message || TEXT.errorBoundary.fallbackMessage}</p>
-      <button onClick={() => reset()}>{TEXT.catalog.tryAgainBtn}</button>
+      <h2>{t("heading")}</h2>
+      <p>{error.message || t("fallbackMessage")}</p>
+      <button onClick={() => reset()}>{t("tryAgainBtn")}</button>
     </div>
   );
 }

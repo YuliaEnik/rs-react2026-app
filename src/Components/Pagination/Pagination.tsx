@@ -1,4 +1,6 @@
-import { TEXT } from "../../constants/text";
+"use client";
+
+import { useTranslations } from "next-intl";
 import "./Pagination.scss";
 
 type Props = {
@@ -8,7 +10,7 @@ type Props = {
 };
 
 const Pagination = ({ page, totalPages, onPageChange }: Props) => {
-  const { pagination } = TEXT;
+  const t = useTranslations("pagination");
 
   const handlePrevPage = () => {
     if (page > 1) {
@@ -25,7 +27,7 @@ const Pagination = ({ page, totalPages, onPageChange }: Props) => {
   return (
     <div className="pagination-controls">
       <button onClick={handlePrevPage} disabled={page === 1}>
-        {pagination.prev}
+        {t("prev")}
       </button>
       <span className="page-info">
         {page} / {totalPages || 1}
@@ -34,7 +36,7 @@ const Pagination = ({ page, totalPages, onPageChange }: Props) => {
         onClick={handleNextPage}
         disabled={page === totalPages || totalPages === 0}
       >
-        {pagination.next}
+        {t("next")}
       </button>
     </div>
   );

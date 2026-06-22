@@ -25,7 +25,7 @@ export interface CardListProps {
 }
 
 export interface ICheckbox {
-  id: number;
-  checked?: boolean;
-  onChange?: () => void;
+  id: string | number;
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

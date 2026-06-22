@@ -46,12 +46,6 @@ export const fetchArtworksQueryFn = async (
 
     throw new Error(`CMA API returned invalid content type: ${contentType}`);
   }
-  /*   if (!res.ok) {
-    if (res.status === 404) throw new Error(ERROR_MESSAGES.API_NOT_FOUND);
-    if (res.status === 429) throw new Error(ERROR_MESSAGES.API_TOO_MANY);
-    if (res.status >= 500) throw new Error(ERROR_MESSAGES.API_SERVER_ERROR);
-    throw new Error(`${ERROR_MESSAGES.API_FAILED} ${res.status}`);
-  } */
 
   const data = await res.json();
   const results = data.data || [];

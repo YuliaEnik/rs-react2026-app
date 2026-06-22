@@ -1,52 +1,51 @@
 import { render, screen } from "@testing-library/react";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/react-router";
-import { describe, expect, it } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { routeTree } from "../../routeTree.gen";
-import NotFoundPage from "./NotFoundPage";
-import { ThemeProvider } from "../../themeContext/ThemeProvider";
+import { describe, expect, it, vi } from "vitest";
+import NotFound from "../../app/[locale]/not-found";
 
-const testQueryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-});
+vi.mock("next-intl/server", () => ({
+  getTranslations: async () => (key: string) => {
+    const translations: Record<string, string> = {
+      heading: "404",
+      subheading: "Page Not Found",
+      message: "The page you are looking for does not exist.",
+      backLink: "Back to Home",
+    };
+    return translations[key] || key;
+  },
+}));
 
-function renderRouterWithUrl(initialUrl: string) {
-  const testHistory = createMemoryHistory({
-    initialEntries: [initialUrl],
-  });
-
-  const router = createRouter({
-    routeTree,
-    history: testHistory,
-    defaultNotFoundComponent: () => <NotFoundPage />,
-    context: {
-      queryClient: testQueryClient,
-    },
-  });
-
-  return render(
-    <QueryClientProvider client={testQueryClient}>
-      <ThemeProvider>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </QueryClientProvider>,
-  );
-}
+vi.mock("../../i18n/navigation", () => ({
+  Link: ({
+    children,
+    href,
+    className,
+  }: {
+    children: React.ReactNode;
+    href: string;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
 
 describe("Feature 4: 404 Not Found Page Tests", () => {
   it("should display the 404 page for unknown routes", async () => {
-    renderRouterWithUrl("/some-non-existent-route");
+    const mockParams = Promise.resolve({ locale: "en" });
+    const ResolvedPage = await NotFound({ params: mockParams });
 
-    const pageContainer = await screen.findByText("404");
-    expect(pageContainer).toBeInTheDocument();
+    render(ResolvedPage);
+
+    const heading = await screen.findByText("404");
+    expect(heading).toBeInTheDocument();
   });
 
   it("should clearly state that the page was not found", async () => {
-    renderRouterWithUrl("/broken-link-123");
+    const mockParams = Promise.resolve({ locale: "en" });
+    const ResolvedPage = await NotFound({ params: mockParams });
+
+    render(ResolvedPage);
 
     const mainHeader = await screen.findByRole("heading", {
       level: 1,
@@ -54,7 +53,7 @@ describe("Feature 4: 404 Not Found Page Tests", () => {
     });
     const subHeader = screen.getByRole("heading", {
       level: 2,
-      name: /page not found/i,
+      name: "Page Not Found",
     });
 
     expect(mainHeader).toBeInTheDocument();
@@ -62,11 +61,14 @@ describe("Feature 4: 404 Not Found Page Tests", () => {
   });
 
   it("should provide a navigation link to return to the main application", async () => {
-    renderRouterWithUrl("/invalid-path");
+    const mockParams = Promise.resolve({ locale: "en" });
+    const ResolvedPage = await NotFound({ params: mockParams });
 
-    const homeLink = await screen.findByRole("link", { name: /back to home/i });
+    render(ResolvedPage);
+
+    const homeLink = await screen.findByRole("link", { name: "Back to Home" });
 
     expect(homeLink).toBeInTheDocument();
-    expect(homeLink).toHaveAttribute("href", "/catalog");
+    expect(homeLink).toHaveAttribute("href", "/");
   });
 });

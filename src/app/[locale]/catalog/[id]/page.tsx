@@ -1,6 +1,6 @@
-import { fetchArtworkByIdQueryFn } from "../../../hooks/useArtworksQueries";
-import Card from "../../../Components/Card/Card";
-import "./../../../pages/DetailsPage/DetailsPage.scss";
+import { fetchArtworkByIdQueryFn } from "../../../../hooks/useArtworksQueries";
+import Card from "../../../../Components/Card/Card";
+import "./../../../../pages/DetailsPage/DetailsPage.scss";
 import CloseButton from "./CloseButton";
 
 interface DetailsPageProps {

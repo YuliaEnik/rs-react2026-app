@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "preview": "vite preview",
     "format:fix": "prettier --write .",
     "prepare": "husky",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.100.14",
     "next": "^16.2.9",
+    "next-intl": "^4.13.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zustand": "^5.0.13"

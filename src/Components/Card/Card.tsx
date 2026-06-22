@@ -1,14 +1,18 @@
 "use client";
 import React, { useState } from "react";
 import type { CardState, IData } from "../../types/types";
-import { TEXT } from "../../constants/text";
+import { useTranslations } from "next-intl";
 import { useStore } from "../../store/useStore";
 import { Checkbox } from "../CheckBox/CheckBox";
 import Image from "next/image";
 import "./Card.scss";
+interface CardProps extends IData {
+  hideCheckbox?: boolean;
+}
 
-const Card: React.FC<IData> = (props: IData) => {
+const Card: React.FC<CardProps> = (props) => {
   const [imgError, setImgError] = useState<CardState["imgError"]>(false);
+  const t = useTranslations("card");
 
   const selectedCards = useStore((state) => state.selectedCards);
   const toggleCard = useStore((state) => state.toggleCard);
@@ -21,7 +25,8 @@ const Card: React.FC<IData> = (props: IData) => {
     }
   };
 
-  const handleCheckboxChange = () => {
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     toggleCard(props);
   };
 
@@ -32,6 +37,8 @@ const Card: React.FC<IData> = (props: IData) => {
           <Image
             src={props.images.web.url}
             fill
+            loading="lazy"
+            unoptimized={true}
             alt={props.title}
             onError={() => setImgError(true)}
             style={{
@@ -41,30 +48,31 @@ const Card: React.FC<IData> = (props: IData) => {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
-          <div className="image-placeholder">{TEXT.card.imageNotAvailable}</div>
+          <div className="image-placeholder">{t("imageNotAvailable")}</div>
         )}
       </div>
       <h3>
-        {TEXT.card.author}
+        {t("author")}
         <i className="card-value">
-          {props.creators?.[0]?.description || TEXT.card.unknown}
+          {props.creators?.[0]?.description || t("unknown")}
         </i>
       </h3>
       <h3>
-        {TEXT.card.name}
+        {t("name")}
         <i className="card-value">{props.title}</i>
       </h3>
       <h3>
-        {TEXT.card.year}
-        <i className="card-value">{props.creation_date || TEXT.card.unknown}</i>
+        {t("year")}
+        <i className="card-value">{props.creation_date || t("unknown")}</i>
       </h3>
       {props.isSelected && props.description && (
         <div className="card-description">
-          <h3>{TEXT.card.description || TEXT.card.unknown}</h3>
+          <h3>{t("description") || t("unknown")}</h3>
           <p>{props.description}</p>
         </div>
       )}
-      {!props.isSelected && (
+
+      {!props.isSelected && !props.hideCheckbox && (
         <div
           className="card-checkbox-container"
           onClick={(e) => e.stopPropagation()}

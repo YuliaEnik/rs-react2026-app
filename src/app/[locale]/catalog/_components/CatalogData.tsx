@@ -1,5 +1,5 @@
-import CardList from "../../../Components/CardList/CardList";
-import { IData } from "../../../types/types";
+import CardList from "../../../../Components/CardList/CardList";
+import { IData } from "../../../../types/types";
 
 interface CatalogDataProps {
   data: IData[];

@@ -1,12 +1,13 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import Pagination from "../../../Components/Pagination/Pagination";
+import { useSearchParams } from "next/navigation";
+import Pagination from "../../../../Components/Pagination/Pagination";
 import dynamic from "next/dynamic";
+import { useRouter } from "../../../../i18n/navigation";
 
 const SelectionFlyout = dynamic(
   () =>
-    import("../../../Components/SelectionFlyout/SelectionFlyout").then(
+    import("../../../../Components/SelectionFlyout/SelectionFlyout").then(
       (mod) => mod.SelectionFlyout,
     ),
   { ssr: false },

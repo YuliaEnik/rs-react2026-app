@@ -1,17 +1,24 @@
 "use client";
 import React from "react";
-import { TEXT } from "../../constants/text";
+import { useTranslations } from "next-intl";
 
 interface ErrorBoundaryState {
   hasError: boolean;
   errorMessage: string;
 }
 
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  heading: string;
+  fallbackMessage: string;
+  tryAgainBtn: string;
+}
+
+class ErrorBoundaryClass extends React.Component<
+  ErrorBoundaryProps,
   ErrorBoundaryState
 > {
-  constructor(props: { children: React.ReactNode }) {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
       hasError: false,
@@ -41,9 +48,9 @@ class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         <div className="error-boundary">
-          <h2>{TEXT.errorBoundary.heading}</h2>
-          <p>{this.state.errorMessage || TEXT.errorBoundary.fallbackMessage}</p>
-          <button onClick={this.handleReset}>{TEXT.catalog.tryAgainBtn}</button>
+          <h2>{this.props.heading}</h2>
+          <p>{this.state.errorMessage || this.props.fallbackMessage}</p>
+          <button onClick={this.handleReset}>{this.props.tryAgainBtn}</button>
         </div>
       );
     }
@@ -52,4 +59,21 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-export default ErrorBoundary;
+export default function ErrorBoundary({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const tCatalog = useTranslations("catalog");
+  const tError = useTranslations("errorBoundary");
+
+  return (
+    <ErrorBoundaryClass
+      heading={tError("heading")}
+      fallbackMessage={tError("fallbackMessage")}
+      tryAgainBtn={tCatalog("tryAgainBtn")}
+    >
+      {children}
+    </ErrorBoundaryClass>
+  );
+}

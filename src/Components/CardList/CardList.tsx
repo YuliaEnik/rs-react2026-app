@@ -4,10 +4,12 @@ import { useSearchParams } from "next/navigation";
 import Card from "../Card/Card";
 import SkeletonCard from "../Skeleton/Skeleton";
 import type { CardListProps, IData } from "../../types/types";
-import { TEXT } from "../../constants/text";
+import { useLocale, useTranslations } from "next-intl";
 import { PAGINATION } from "../../constants/numbers";
+import { useStore } from "../../store/useStore";
+import { Checkbox } from "../CheckBox/CheckBox";
 import "./CardList.scss";
-import { handleSelectAction } from "../../app/catalog/actions";
+import { handleSelectAction } from "../../app/actions";
 
 const CardList: React.FC<CardListProps> = ({
   loading,
@@ -17,10 +19,15 @@ const CardList: React.FC<CardListProps> = ({
   onCardClick,
 }) => {
   const searchParams = useSearchParams();
+  const currentLocale = useLocale();
+  const t = useTranslations("catalog");
   const currentPage = searchParams?.get("page") || "1";
   const shouldShowSkeletons = loading && !repos;
   const hasNoResults = repos?.length === 0 && !loading && searchQuery !== "";
   const showError = !!error && !loading;
+
+  const selectedCards = useStore((state) => state.selectedCards);
+  const toggleCard = useStore((state) => state.toggleCard);
 
   return (
     <ul className="cards-wrapper" onClick={(e) => e.stopPropagation()}>
@@ -32,7 +39,7 @@ const CardList: React.FC<CardListProps> = ({
       {hasNoResults && (
         <div className="loading">
           <p>
-            {TEXT.catalog.noResults} &quot;{searchQuery}&quot;
+            {t("noResults")} &quot;{searchQuery}&quot;
           </p>
         </div>
       )}
@@ -48,22 +55,45 @@ const CardList: React.FC<CardListProps> = ({
           return <Card {...cardData} key={cardData.id} onClick={onCardClick} />;
         }
 
-        const params = new URLSearchParams(searchParams?.toString() || "");
-        params.set("id", String(cardData.id));
+        const isChecked = selectedCards.some((item) => item.id === cardData.id);
 
         return (
           <form
             action={handleSelectAction}
             key={cardData.id}
             className="cardlist-form"
+            style={{ position: "relative" }}
           >
             <input type="hidden" name="id" value={cardData.id} />
             <input type="hidden" name="page" value={currentPage} />
             <input type="hidden" name="query" value={searchQuery} />
+            <input type="hidden" name="locale" value={currentLocale} />
 
-            <button type="submit" className="cardlist-btn">
-              <Card {...cardData} onClick={() => {}} />
+            <button
+              type="button"
+              className="cardlist-btn"
+              onClick={(e) => {
+                e.currentTarget.form?.requestSubmit();
+              }}
+            >
+              <Card {...cardData} onClick={() => {}} hideCheckbox={true} />
             </button>
+
+            {!cardData.isSelected && (
+              <div
+                className="card-checkbox-container"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Checkbox
+                  id={cardData.id}
+                  checked={isChecked}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    toggleCard(cardData);
+                  }}
+                />
+              </div>
+            )}
           </form>
         );
       })}
