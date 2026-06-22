@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import "../../../pages/about/About.scss";
+import "../../../appPages/About/About.scss";
 
 interface AboutPageProps {
   params: Promise<{ locale: string }>;

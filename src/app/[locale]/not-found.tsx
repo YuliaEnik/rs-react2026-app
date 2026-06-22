@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "../../i18n/navigation";
-import "./../../pages/NotFoundPage/NotFoundPage.scss";
+import "./../../appPages/NotFoundPage/NotFoundPage.scss";
 
 export default async function NotFound({
   params,

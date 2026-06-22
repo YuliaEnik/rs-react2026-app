@@ -1,6 +1,6 @@
 import SkeletonCard from "../../../Components/Skeleton/Skeleton";
 import { PAGINATION } from "../../../constants/numbers";
-import "../../../pages/HomePage/HomePage.scss";
+import "../../../appPages/HomePage/HomePage.scss";
 
 export default function CatalogLoading() {
   return (

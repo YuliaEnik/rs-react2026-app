@@ -2,7 +2,7 @@
 
 import { handleCloseAction } from "../../../actions";
 import { useLocale } from "next-intl";
-import "./../../../../pages/DetailsPage/DetailsPage.scss";
+import "./../../../../appPages/DetailsPage/DetailsPage.scss";
 
 interface CloseButtonProps {
   currentPage: string;
