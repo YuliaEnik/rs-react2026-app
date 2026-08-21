@@ -80,22 +80,13 @@ function Navigation() {
         </button>
 
         <select
-          value={currentLocale}
-          onChange={handleLocaleChange}
-          className="locale-switcher"
-          style={{
-            background: "none",
-            border: "1px solid var(--color-border)",
-            color: "inherit",
-            padding: "0.3rem",
-            borderRadius: "4px",
-            cursor: "pointer",
-            marginRight: "1rem",
-          }}
-        >
-          <option value="en">EN</option>
-          <option value="ru">RU</option>
-        </select>
+        value={currentLocale}
+        onChange={handleLocaleChange}
+        className="nav-link btn locale-switcher"
+      >
+        <option value="en">EN</option>
+        <option value="ru">RU</option>
+      </select>
       </div>
     </nav>
   );

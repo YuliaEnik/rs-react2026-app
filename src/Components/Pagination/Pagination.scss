@@ -1,8 +1,9 @@
 .pagination-controls {
   display: flex;
   align-items: center;
-  flex-direction: space-around;
+  justify-content: space-around;
   gap: var(--spacing-m);
+  margin-bottom: 2rem;
   button {
     border: 1px solid var(--color-shadow);
   }

@@ -62,7 +62,6 @@ const CardList: React.FC<CardListProps> = ({
             action={handleSelectAction}
             key={cardData.id}
             className="cardlist-form"
-            style={{ position: "relative" }}
           >
             <input type="hidden" name="id" value={cardData.id} />
             <input type="hidden" name="page" value={currentPage} />

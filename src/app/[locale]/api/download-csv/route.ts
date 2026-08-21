@@ -3,7 +3,14 @@ import { IData } from "../../../../types/types";
 
 export async function POST(request: Request) {
   try {
-    const selectedCards: IData[] = await request.json();
+    const formData = await request.formData();
+    const cardsRaw = formData.get("cards");
+
+    if (!cardsRaw || typeof cardsRaw !== "string") {
+      return NextResponse.json({ error: "No cards provided" }, { status: 400 });
+    }
+
+    const selectedCards: IData[] = JSON.parse(cardsRaw);
 
     const headers = [
       "ID",
@@ -38,10 +45,11 @@ export async function POST(request: Request) {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
         "X-Total-Count": String(selectedCards.length),
+  
+        "Content-Disposition": `attachment; filename="${selectedCards.length}_items.csv"`,
       },
     });
-  } catch (error) {
-    console.error("Server CSV generation failed:", error);
+  } catch  {
     return NextResponse.json({ error: "Failed to generate CSV" }, { status: 500 });
   }
 }

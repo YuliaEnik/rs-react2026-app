@@ -72,3 +72,43 @@ html[data-theme="light"] {
     display: inline;
   }
 }
+
+.locale-switcher {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  padding-right: 1.8rem;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1em;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary-dark);
+  }
+
+  option {
+    font-size: 1rem;
+    padding: 0.5rem;
+    background-color: #ffffff;
+    color: var(--color-secondary-light);
+
+    &:hover, &:focus {
+      background-color: var(--color-primary-dark);
+    }
+  }
+}
+
+html[data-theme="dark"] {
+  .locale-switcher {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    
+    option {
+      background-color: #1a1a1a;
+      color: #ffffff;
+    }
+  }
+}

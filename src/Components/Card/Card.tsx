@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useStore } from "../../store/useStore";
 import { Checkbox } from "../CheckBox/CheckBox";
 import Image from "next/image";
+import { useShallow } from 'zustand/react/shallow';
 import "./Card.scss";
 interface CardProps extends IData {
   hideCheckbox?: boolean;
@@ -14,8 +15,12 @@ const Card: React.FC<CardProps> = (props) => {
   const [imgError, setImgError] = useState<CardState["imgError"]>(false);
   const t = useTranslations("card");
 
-  const selectedCards = useStore((state) => state.selectedCards);
-  const toggleCard = useStore((state) => state.toggleCard);
+  const { selectedCards, toggleCard } = useStore(
+  useShallow((state) => ({
+    selectedCards: state.selectedCards,
+    toggleCard: state.toggleCard,
+  }))
+);
 
   const isChecked = selectedCards.some((item) => item.id === props.id);
 
@@ -67,7 +72,7 @@ const Card: React.FC<CardProps> = (props) => {
       </h3>
       {props.isSelected && props.description && (
         <div className="card-description">
-          <h3>{t("description") || t("unknown")}</h3>
+          <h3>{t("description")}</h3>
           <p>{props.description}</p>
         </div>
       )}

@@ -5,11 +5,10 @@
   gap: var(--spacing-m);
   max-width: var(--max-width-content);
   width: 100%;
-  padding: 0 2rem 2rem 2rem;
 }
 
 .cards-content {
-  margin: 5rem auto;
+  margin: 5rem auto 2rem;
   display: flex;
   justify-content: flex-start;
   gap: var(--spacing-m);
