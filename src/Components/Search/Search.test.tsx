@@ -1,60 +1,70 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { useState } from "react";
 import Search from "./Search";
-import { TEXT } from "../../constants/text";
+import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 
-const mockSetValue = vi.fn();
-
-let initialStorageValue = "";
-
-vi.mock("../../hooks/useLocalStorage", () => ({
-  useLocalStorage: vi.fn((_key, initialValue) => {
-    const [state, setState] = useState(initialStorageValue || initialValue);
-
-    const activeSetValue = (newValue: string) => {
-      setState(newValue);
-      mockSetValue(newValue);
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      placeholder: "Search...",
     };
+    return translations[key] || key;
+  },
+  useLocale: () => "ru",
+}));
 
-    return [state, activeSetValue];
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => ({
+    get: (key: string) => (key === "query" ? "initial query" : null),
   }),
 }));
 
-describe("Search Component", () => {
-  const mockOnSearch = vi.fn();
+const mockSearchAction = vi.fn();
+vi.mock("../../app/actions", () => ({
+  handleSearchAction: (formData: FormData) => mockSearchAction(formData),
+}));
 
+describe("Search Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    initialStorageValue = "";
+    window.localStorage.clear();
   });
 
-  it("updates value and calls onSearch with trimmed query after click", () => {
-    render(<Search onSearch={mockOnSearch} />);
+  it("renders correctly with initial values and hidden locale input", () => {
+    render(<Search />);
 
-    const input = screen.getByPlaceholderText(TEXT.search.placeholder);
-    const button = screen.getByRole("button");
+    const input = screen.getByPlaceholderText("Search...") as HTMLInputElement;
+    expect(input).toBeInTheDocument();
+    expect(input.value).toBe("initial query");
 
-    fireEvent.change(input, { target: { value: "  test query  " } });
-    expect(mockSetValue).toHaveBeenCalledWith("  test query  ");
-
-    fireEvent.click(button);
-    expect(mockOnSearch).toHaveBeenCalledWith("test query");
-    expect(mockSetValue).toHaveBeenCalledWith("test query");
+    const localeInput = document.querySelector(
+      'input[name="locale"]',
+    ) as HTMLInputElement;
+    expect(localeInput).toBeInTheDocument();
+    expect(localeInput.value).toBe("ru");
   });
 
-  it("handles empty search query properly", () => {
-    initialStorageValue = "some old value";
+  it("updates localStorage on input change", () => {
+    render(<Search />);
 
-    render(<Search onSearch={mockOnSearch} />);
-    const input = screen.getByPlaceholderText(TEXT.search.placeholder);
+    const input = screen.getByPlaceholderText("Search...");
+    fireEvent.change(input, { target: { value: "React 2026" } });
+
+    expect(window.localStorage.getItem(STORAGE_KEYS.SEARCH_QUERY)).toBe(
+      "React 2026",
+    );
+  });
+
+  it("submits the form when search button is clicked", () => {
+    render(<Search />);
+
     const button = screen.getByRole("button");
+    const form = document.querySelector("form");
+    const submitSpy = vi.fn((e) => e.preventDefault());
 
-    fireEvent.change(input, { target: { value: "" } });
-
+    form?.addEventListener("submit", submitSpy);
     fireEvent.click(button);
 
-    expect(mockOnSearch).toHaveBeenCalledWith("");
-    expect(mockSetValue).toHaveBeenCalledWith("");
+    expect(submitSpy).toHaveBeenCalled();
   });
 });

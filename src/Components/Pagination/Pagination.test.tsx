@@ -2,6 +2,16 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import Pagination from "./Pagination";
 
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      prev: "« Prev",
+      next: "Next »",
+    };
+    return translations[key] || key;
+  },
+}));
+
 describe("Pagination Component", () => {
   it("renders correct page info text", () => {
     render(<Pagination page={2} totalPages={5} onPageChange={vi.fn()} />);

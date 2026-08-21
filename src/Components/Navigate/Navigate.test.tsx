@@ -1,112 +1,121 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-  createRootRoute,
-  createRoute,
-} from "@tanstack/react-router";
-import { describe, expect, it, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TEXT } from "../../constants/text";
-import { type ThemeKey, ThemeContext } from "../../themeContext/ThemeContext";
-import { queryClient } from "../../queryClient";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import Navigation from "./Navigate";
+import { ThemeContext } from "../../themeContext/ThemeContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../../queryClient";
 
-const testQueryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-});
+const mockReplace = vi.fn();
+const mockRefresh = vi.fn();
 
-vi.spyOn(queryClient, "invalidateQueries").mockImplementation(async () => {});
+vi.mock("next-intl", () => ({
+  useLocale: () => "ru",
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      "navigation.home": "Главная",
+      "navigation.about": "О нас",
+      "theme.dark": "Темная",
+      "theme.light": "Светлая",
+      "refresh.refresh": "Обновить",
+    };
+    return translations[key] || key;
+  },
+}));
 
-const rootRoute = createRootRoute({
-  component: () => <Navigation />,
-});
+vi.mock("../../i18n/navigation", () => ({
+  Link: ({ children, href, className }: { children: React.ReactNode; href: string; className?: string }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+  useRouter: () => ({
+    replace: mockReplace,
+    refresh: mockRefresh,
+  }),
+  usePathname: () => "/about",
+}));
 
-const catalogRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/catalog",
-});
-const aboutRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/about",
-});
-const routeTree = rootRoute.addChildren([catalogRoute, aboutRoute]);
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => ({
+    toString: () => "page=1&query=test",
+  }),
+}));
 
-async function renderNavigation(
-  themeValue: ThemeKey = "light",
-  toggleThemeMock = vi.fn(),
-) {
-  const testHistory = createMemoryHistory({ initialEntries: ["/catalog"] });
-  const router = createRouter({ routeTree, history: testHistory });
-  await router.load();
-
-  return render(
-    <QueryClientProvider client={testQueryClient}>
-      <ThemeContext.Provider
-        value={{ theme: themeValue, toggleTheme: toggleThemeMock }}
-      >
-        <RouterProvider router={router} defaultComponent={Navigation} />
-      </ThemeContext.Provider>
-    </QueryClientProvider>,
-  );
-}
+vi.mock("../../queryClient", () => ({
+  queryClient: {
+    invalidateQueries: vi.fn(() => Promise.resolve()),
+  },
+}));
 
 describe("Navigation Component", () => {
-  it("should render navigation links with correct text", async () => {
-    await renderNavigation();
+  let testQueryClient: QueryClient;
 
-    const homeLink = screen.getByText(TEXT.navigation.home);
-    const aboutLink = screen.getByText(TEXT.navigation.about);
-
-    expect(homeLink).toBeInTheDocument();
-    expect(aboutLink).toBeInTheDocument();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    testQueryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
   });
 
-  it("should have correct href attributes for routing", async () => {
-    await renderNavigation();
+  const renderComponent = (themeValue: "light" | "dark" = "light", toggleThemeMock = vi.fn()) => {
+    return render(
+      <QueryClientProvider client={testQueryClient}>
+        <ThemeContext.Provider value={{ theme: themeValue, toggleTheme: toggleThemeMock }}>
+          <Navigation />
+        </ThemeContext.Provider>
+      </QueryClientProvider>
+    );
+  };
 
-    const homeLink = screen.getByText(TEXT.navigation.home).closest("a");
-    const aboutLink = screen.getByText(TEXT.navigation.about).closest("a");
+  it("should render navigation links with correct text", () => {
+    renderComponent();
 
-    expect(homeLink).toHaveAttribute("href", "/catalog");
-    expect(aboutLink).toHaveAttribute("href", "/about");
+    expect(screen.getByText("Главная")).toBeInTheDocument();
+    expect(screen.getByText("О нас")).toBeInTheDocument();
   });
 
-  it("should display dark theme button text when current theme is light", async () => {
-    await renderNavigation("light");
+  it("should have correct href attributes for routing", () => {
+    renderComponent();
 
-    const button = screen.getByRole("button", { name: TEXT.theme.dark });
-    expect(button).toBeInTheDocument();
+    expect(screen.getByText("Главная")).toHaveAttribute("href", "/");
+    expect(screen.getByText("О нас")).toHaveAttribute("href", "/about");
   });
 
-  it("should display light theme button text when current theme is dark", async () => {
-    await renderNavigation("dark");
+  it("should display dark and light theme button texts", () => {
+    renderComponent("light");
 
-    const button = screen.getByRole("button", { name: TEXT.theme.light });
-    expect(button).toBeInTheDocument();
+    expect(screen.getByText("Темная")).toBeInTheDocument();
+    expect(screen.getByText("Светлая")).toBeInTheDocument();
   });
 
-  it("should call toggleTheme function when theme button is clicked", async () => {
+  it("should call toggleTheme function when theme button is clicked", () => {
     const toggleThemeMock = vi.fn();
-    await renderNavigation("light", toggleThemeMock);
+    renderComponent("light", toggleThemeMock);
 
-    const button = screen.getByRole("button", { name: TEXT.theme.dark });
-    fireEvent.click(button);
+    const button = screen.getByText("Темная").closest("button");
+    if (button) fireEvent.click(button);
 
     expect(toggleThemeMock).toHaveBeenCalledTimes(1);
   });
 
-  it("should call invalidateQueries when refresh button is clicked", async () => {
-    await renderNavigation();
+  it("should call router.refresh when refresh button is clicked", async () => {
+    renderComponent();
 
-    const refreshButton = screen.getByRole("button", {
-      name: TEXT.refresh.refresh,
-    });
-    expect(refreshButton).toBeInTheDocument();
-
+    const refreshButton = screen.getByRole("button", { name: "Обновить" });
     fireEvent.click(refreshButton);
 
-    expect(queryClient.invalidateQueries).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(queryClient.invalidateQueries).toHaveBeenCalledTimes(1);
+      expect(mockRefresh).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("should handle locale change selection correctly", () => {
+    renderComponent();
+
+    const select = screen.getByRole("combobox");
+    fireEvent.change(select, { target: { value: "en" } });
+
+    expect(mockReplace).toHaveBeenCalledWith("/about?page=1&query=test", { locale: "en" });
   });
 });

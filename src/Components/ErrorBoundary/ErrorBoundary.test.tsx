@@ -1,12 +1,27 @@
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
 import ErrorBoundary from "./ErrorBoundary";
+
+vi.mock("next-intl", () => ({
+  useTranslations: (namespace: string) => (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      catalog: {
+        tryAgainBtn: "Попробовать снова",
+      },
+      errorBoundary: {
+        heading: "Что-то пошло не так",
+        fallbackMessage: "Произошла непредвиденная ошибка",
+      },
+    };
+    return translations[namespace]?.[key] || key;
+  },
+}));
 
 const ThrowError = ({ message }: { message: string }) => {
   throw new Error(message);
 };
 
-describe("ErrorBoundary", () => {
+describe("ErrorBoundary Integration with next-intl", () => {
   beforeEach(() => {
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
@@ -24,10 +39,10 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>,
     );
 
-    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(screen.getByText("Что-то пошло не так")).toBeInTheDocument();
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /try again/i }),
+      screen.getByRole("button", { name: "Попробовать снова" }),
     ).toBeInTheDocument();
   });
 
@@ -38,7 +53,7 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>,
     );
 
-    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(screen.getByText("Что-то пошло не так")).toBeInTheDocument();
 
     rerender(
       <ErrorBoundary>
@@ -46,11 +61,11 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>,
     );
 
-    const button = screen.getByRole("button", { name: /try again/i });
+    const button = screen.getByRole("button", { name: "Попробовать снова" });
     fireEvent.click(button);
 
     expect(screen.getByText("Safe Content")).toBeInTheDocument();
-    expect(screen.queryByText("Something went wrong")).not.toBeInTheDocument();
+    expect(screen.queryByText("Что-то пошло не так")).not.toBeInTheDocument();
   });
 
   it("render without error", () => {

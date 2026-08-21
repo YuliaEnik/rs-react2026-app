@@ -1,7 +1,21 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ThemeProvider } from "./ThemeProvider";
 import { useAppTheme } from "./ThemeContext";
+import { useState, useCallback } from "react";
+
+vi.mock("../hooks/useLocalStorage", () => ({
+  useLocalStorage: vi.fn((_key: string, initialValue: string) => {
+    const [state, setState] = useState(initialValue);
+    const setValue = useCallback(
+      (value: string | ((val: string) => string)) => {
+        setState((prev) => (value instanceof Function ? value(prev) : value));
+      },
+      [],
+    );
+    return [state, setValue] as const;
+  }),
+}));
 
 const TestComponent = () => {
   const { theme, toggleTheme } = useAppTheme();
@@ -18,6 +32,7 @@ const TestComponent = () => {
 describe("Theme Context", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    vi.clearAllMocks();
   });
 
   it("change theme by click", () => {

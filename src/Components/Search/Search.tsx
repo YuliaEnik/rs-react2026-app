@@ -1,45 +1,40 @@
+"use client";
+
 import React from "react";
+import { useTranslations, useLocale } from "next-intl";
 import type { SearchProps } from "../../types/types";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { TEXT } from "../../constants/text";
-import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
 import "./Search.scss";
+import { useSearchParams } from "next/navigation";
+import { STORAGE_KEYS } from "../../constants/localStoragesKeys";
+import { handleSearchAction } from "../../app/actions";
 
-const Search: React.FC<SearchProps> = ({ onSearch }) => {
-  const [value, setValue] = useLocalStorage(STORAGE_KEYS.SEARCH_QUERY, "");
-
-  const handleSearch = () => {
-    const trimmedValue = value.trim();
-    if (onSearch) {
-      onSearch(trimmedValue);
-    }
-    setValue(trimmedValue);
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+const Search: React.FC<SearchProps> = () => {
+  const searchParams = useSearchParams();
+  const currentLocale = useLocale();
+  const queryFromUrl = searchParams?.get("query") || "";
+  const t = useTranslations("search");
 
   return (
     <span className="search-wrap">
-      <div className="search">
+      <form action={handleSearchAction} className="search">
+        <input type="hidden" name="locale" value={currentLocale} />
         <input
           type="text"
-          name="text"
+          name="query"
           className="search-form_input"
-          placeholder={TEXT.search.placeholder}
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
+          placeholder={t("placeholder")}
+          defaultValue={queryFromUrl}
+          onChange={(e) => {
+            if (typeof window !== "undefined") {
+              window.localStorage.setItem(
+                STORAGE_KEYS.SEARCH_QUERY,
+                e.target.value,
+              );
+            }
+          }}
         />
-        <button onClick={handleSearch} className="search-button"></button>
-      </div>
+        <button className="search-button"></button>
+      </form>
     </span>
   );
 };

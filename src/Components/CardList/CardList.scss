@@ -18,3 +18,37 @@
   min-height: 200px;
   width: 100%;
 }
+
+.cardlist-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  width: 100%;
+  &:hover {
+    transform: none;
+  }
+}
+
+.cardlist-form {
+  position: relative;
+
+  .cardlist-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .card-checkbox-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10;
+  }
+}

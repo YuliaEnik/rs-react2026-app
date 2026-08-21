@@ -6,12 +6,12 @@
   --color-primary: #bdbdbd;
   --color-secondary: #929e9f;
   --color-secondary-light: #d6c5b0;
-  --color-shadow: #4d4d4d;
+  --color-shadow: #5a5858;
   --color-button-active: #817f7f;
 
   --max-width-content: 80rem;
   --card-width: 15rem;
-  --card-height: 27rem;
+  --card-height: 29rem;
   --border-radius: 0.5rem;
   --spacing-sm: 0.5rem;
   --spacing-m: 1rem;
@@ -137,11 +137,13 @@ body {
 
 .main {
   min-height: calc(100vh - 4rem);
+  max-width: var(--max-width-content);
+  width: 100%;
+  padding: 3rem 2rem 0;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  padding-top: 3rem;
 }
 
 .footer {

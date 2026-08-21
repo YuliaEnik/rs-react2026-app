@@ -1,9 +1,15 @@
 import type { JSX } from "react";
 import { LINKS } from "../../constants/links";
-import { TEXT } from "../../constants/text";
+import { getTranslations } from "next-intl/server";
 import "./Footer.scss";
 
-const Footer = (): JSX.Element => {
+interface FooterProps {
+  locale: string;
+}
+
+const Footer = async ({ locale }: FooterProps): Promise<JSX.Element> => {
+  const t = await getTranslations({ locale, namespace: "footer" });
+
   return (
     <section className="footer">
       <div className="footer-content">
@@ -12,16 +18,17 @@ const Footer = (): JSX.Element => {
           target="_blank"
           rel="noreferrer"
           className="footer-link github-logo"
-          aria-label={TEXT.footer.gitHubLabel}
+          aria-label={t("gitHubLabel")}
         />
-        {TEXT.footer.year}
+        {t("year")}
+
         <a
           href={LINKS.rsSchool}
           target="_blank"
           rel="noreferrer"
           className="footer-link"
         >
-          {TEXT.footer.schoolName}
+          {t("schoolName")}
         </a>
       </div>
     </section>

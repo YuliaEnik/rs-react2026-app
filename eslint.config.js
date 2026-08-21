@@ -8,12 +8,12 @@ import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(["dist", "coverage", "node_modules"]),
+  globalIgnores(["dist", "coverage", "node_modules", ".next", "**/*.test.tsx", "**/*.test.ts", "**/mocks/**/*"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommended,
+      ...tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
       reactPlugin.configs.flat.recommended,
@@ -22,11 +22,16 @@ export default defineConfig([
     ],
     languageOptions: {
       globals: globals.browser,
+      parser: tseslint.parser,
     },
     settings: {
       react: {
         version: "detect",
       },
     },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+    }
   },
 ]);

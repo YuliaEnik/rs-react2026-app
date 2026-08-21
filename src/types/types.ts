@@ -13,18 +13,19 @@ export interface CardState {
 }
 
 export type SearchProps = {
-  onSearch: (value: string) => void;
+  onSearch?: (value: string) => void;
 };
 export interface CardListProps {
   loading: boolean;
   repos: IData[] | null;
   error: string | null;
   searchQuery: string;
-  onCardClick: (id: number) => void;
+  currentPage?: number;
+  onCardClick?: (id: number) => void;
 }
 
 export interface ICheckbox {
-  id: number;
-  checked?: boolean;
-  onChange?: () => void;
+  id: string | number;
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

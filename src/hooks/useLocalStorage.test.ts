@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { renderHook } from "@testing-library/react";
 import { useLocalStorage } from "./useLocalStorage";
 
 describe("useLocalStorage", () => {
@@ -7,6 +7,7 @@ describe("useLocalStorage", () => {
 
   beforeEach(() => {
     window.localStorage.clear();
+    vi.restoreAllMocks();
   });
 
   it("should use initial value", () => {
@@ -16,12 +17,54 @@ describe("useLocalStorage", () => {
 
   it("should save new value", () => {
     const { result } = renderHook(() => useLocalStorage(KEY, ""));
+    const [, setValue] = result.current;
 
-    act(() => {
-      result.current[1]("new_val");
+    setValue("new_val");
+
+    expect(window.localStorage.getItem(KEY)).toBe("new_val");
+  });
+
+  it("should remove item from localStorage if value is empty string", () => {
+    window.localStorage.setItem(KEY, "existing_val");
+    const { result } = renderHook(() => useLocalStorage(KEY, "existing_val"));
+    const [, setValue] = result.current;
+
+    setValue("");
+
+    expect(window.localStorage.getItem(KEY)).toBeNull();
+  });
+
+  it("should return initial value and log error if localStorage throws on read", () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    vi.spyOn(
+      Object.getPrototypeOf(window.localStorage),
+      "getItem",
+    ).mockImplementation(() => {
+      throw new Error("SecurityError");
     });
 
-    expect(result.current[0]).toBe("new_val");
-    expect(window.localStorage.getItem(KEY)).toBe("new_val");
+    const { result } = renderHook(() => useLocalStorage(KEY, "fallback"));
+
+    expect(result.current[0]).toBe("fallback");
+    expect(consoleSpy).toHaveBeenCalled();
+  });
+
+  it("should log error if localStorage throws on write", () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    vi.spyOn(
+      Object.getPrototypeOf(window.localStorage),
+      "setItem",
+    ).mockImplementation(() => {
+      throw new Error("QuotaExceededError");
+    });
+
+    const { result } = renderHook(() => useLocalStorage(KEY, "init"));
+    const [, setValue] = result.current;
+
+    setValue("new_val");
+
+    expect(consoleSpy).toHaveBeenCalled();
   });
 });
